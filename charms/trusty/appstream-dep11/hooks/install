@@ -1,0 +1,68 @@
+#!/bin/sh
+
+set -ex
+
+juju-log 'Installing appstream-dep11 dependencies'
+
+apt-get -y install gir1.2-rsvg-2.0 \
+                   python3-apt \
+                   python3-cairo \
+                   python3-gi \
+                   python3-gi-cairo \
+                   python3-jinja2 \
+                   python3-lmdb \
+                   python3-lxml \
+                   python3-pil \
+                   python3-pygments \
+                   python3-setuptools \
+                   python3-voluptuous \
+                   python3-yaml
+
+juju-log 'Installing utilities'
+
+apt-get -y install git python-virtualenv
+
+juju-log 'Cloning repository'
+
+cat <<EOF | su - ubuntu
+set -e
+git clone https://github.com/ximion/appstream-dep11.git
+virtualenv --system-site-packages -p /usr/bin/python3 appstream
+cp ${CHARM_DIR}/update-appstream.sh ~ubuntu
+EOF
+
+juju-log 'Installing web server'
+
+apt-get -y install apache2
+
+juju-log 'Installing config files'
+
+cat <<EOF | su - ubuntu
+mkdir -p /home/ubuntu/appstream-public /home/ubuntu/appstream-workdir
+ln -sf ../logs /home/ubuntu/appstream-workdir/logs
+EOF
+
+cat <<EOF > /etc/apache2/sites-available/appstream.conf
+<Directory /home/ubuntu/appstream-public>
+    Options Indexes FollowSymLinks
+    Require all granted
+</Directory>
+
+<Directory /home/ubuntu/logs>
+    Options Indexes
+    Require all granted
+</Directory>
+
+<VirtualHost *:80>
+    DocumentRoot /home/ubuntu/appstream-public
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/custom.log combined
+    AddType 'test/plain' .log
+    AddCharset UTF-8 .log
+</VirtualHost>
+EOF
+
+rm -r /etc/apache2/sites-enabled/000-default.conf
+ln -sf ../sites-available/appstream.conf /etc/apache2/sites-enabled/
+service apache2 restart
+open-port 80

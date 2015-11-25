@@ -1,0 +1,4 @@
+Deploy script
+Handle creating of volume for mirror or mounting it if it exists
+juju action(?) to mount the mirror, called from the deployment script
+Make update-appstream.sh noop until the mirror is mounted

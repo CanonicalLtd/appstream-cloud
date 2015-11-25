@@ -2,9 +2,9 @@
 
 set -e
 
+BUILD_DIR=~/appstream-dep11
 PUBLIC_DIR=~/appstream-public
-WORKSPACE_DIR=~/dep11
-SCRIPT_DIR=~/appstream-dep11
+WORKSPACE_DIR=~/appstream-workdir
 STAMP_FILE=~/last-update
 LOG_BASE_DIR=~/logs
 
@@ -19,13 +19,15 @@ debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restr
 
 . ~/appstream/bin/activate
 
+cd ${BUILD_DIR}
+git pull
+python3 setup.py build
+python3 setup.py install
+
 cd ${WORKSPACE_DIR}
 dep11-generator process . xenial
 dep11-generator process . xenial-proposed
 dep11-generator update-html .
-#PYTHONPATH=${SCRIPT_DIR} ${SCRIPT_DIR}/scripts/dep11-generator process . xenial
-#PYTHONPATH=${SCRIPT_DIR} ${SCRIPT_DIR}/scripts/dep11-generator process . xenial-proposed
-#PYTHONPATH=${SCRIPT_DIR} ${SCRIPT_DIR}/scripts/dep11-generator update-html .
 
 rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
