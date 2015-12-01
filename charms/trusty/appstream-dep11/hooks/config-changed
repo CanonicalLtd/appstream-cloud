@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# If we don't have a mirror, quit (the deployment will mount this for us soon)
+if ! grep -qs /srv/data /proc/mounts; then
+    juju-log 'Deferring config-changed hook, since /srv/data is not yet mounted'
+    exit 0
+fi
+
+juju-log 'Running config-changed hook'
+
+IP=$(config-get ip)
+
+juju-log "Got IP ${IP}"
+
+RELEASES=$(config-get releases)
+COMPONENTS="main universe multiverse restricted"
+ARCHES=$(config-get arches)
+
+juju-log "Got releases ${RELEASES}"
+
+cat <<EOF | su - ubuntu
+sed -e 's/#IP#/${IP}/' ${CHARM_DIR}/dep11-config.yml.in > /srv/data/appstream/appstream-workdir/dep11-config.yml
+EOF
+
+for r in ${RELEASES}; do
+    for release in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
+        cat <<EOF >> /srv/data/appstream/appstream-workdir/dep11-config.yml
+  ${release}:
+    components:
+EOF
+
+        for component in ${COMPONENTS}; do
+            echo "      - ${component}" >> /srv/data/appstream/appstream-workdir/dep11-config.yml
+        done
+
+        echo "    architectures:" >> /srv/data/appstream/appstream-workdir/dep11-config.yml
+        for arch in ${ARCHES}; do
+            echo "      - ${arch}" >> /srv/data/appstream/appstream-workdir/dep11-config.yml
+        done
+    done
+done
+
+cat <<EOF | su - ubuntu
+set -e
+
+sed -e 's/#RELEASES#/${RELEASES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+
+chmod a+x ~/update-appstream.sh
+
+if ! crontab -l | grep -qs update-appstream; then
+    echo "0 * * * * flock -xn ~/lock ~/update-appstream.sh" | crontab -
+fi
+EOF

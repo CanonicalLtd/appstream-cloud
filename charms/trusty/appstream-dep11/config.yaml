@@ -1,0 +1,11 @@
+options:
+    ip:
+        default: 127.0.0.1
+        description: The public external IP of the appstream service
+        type: string
+    releases:
+        default: xenial
+        description: The releases to act on (space separated)
+        type: string
+    arches:
+        default: amd64 arm64 armhf i386 powerpc ppc64el

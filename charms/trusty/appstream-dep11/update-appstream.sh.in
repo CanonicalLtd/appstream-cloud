@@ -1,0 +1,57 @@
+#!/bin/sh
+
+set -e
+
+BASE_DIR=/srv/data/appstream
+
+BUILD_DIR=${BASE_DIR}/appstream-dep11
+PUBLIC_DIR=${BASE_DIR}/appstream-public
+WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
+STAMP_FILE=${BASE_DIR}/last-update
+LOG_BASE_DIR=${BASE_DIR}/logs
+VIRTUALENV_DIR=${BASE_DIR}/appstream
+
+RELEASES="#RELEASES#"
+
+for release in ${RELEASES}; do
+    for suite in proposed security backports updates; do
+        RELEASES=${RELEASES}${RELEASES:+ }${release}-${suite}
+    done
+done
+
+# If we don't have a mirror, quit (the deployment will mount this for us soon)
+if ! grep -qs /srv/data /proc/mounts; then
+    exit 0
+fi
+
+# Start logging
+logdir="${LOG_BASE_DIR}/`date "+%Y/%m"`"
+mkdir -p ${logdir}
+NOW=`date "+%d_%H%M"`
+LOGFILE="${logdir}/${NOW}.log"
+exec >> "${LOGFILE}" 2>&1
+
+debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restricted -a amd64 -d $(echo ${RELEASES} | sed -e 's/ /,/g') --getcontents --no-check-gpg --method http /srv/data/mirror
+
+. ${VIRTUALENV_DIR}/bin/activate
+
+cd ${BUILD_DIR}
+git pull
+python3 setup.py build
+python3 setup.py install
+
+cd ${WORKSPACE_DIR}
+
+for r in ${RELEASES}; do
+    dep11-generator process . ${release}
+done
+
+for release in ${RELEASES}; do
+    dep11-generator update-html . ${release}
+done
+
+rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
+touch ${STAMP_FILE}
+
+# finish logging
+exec > /dev/null 2>&1

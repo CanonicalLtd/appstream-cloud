@@ -1,0 +1,7 @@
+mirror-mounted:
+    description: Try to mount the mirror device
+    params:
+        device:
+            type: string
+            description: The device the mirror is available on
+    required: [device]
