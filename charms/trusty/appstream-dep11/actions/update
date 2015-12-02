@@ -13,5 +13,7 @@ cd ${BUILD_DIR}
 git pull
 python3 setup.py build
 python3 setup.py install
-juju-log 'Now at revision $(git rev-parse HEAD)'
 EOF
+
+cd ${BUILD_DIR}
+juju-log 'Now at revision $(git rev-parse HEAD)'
