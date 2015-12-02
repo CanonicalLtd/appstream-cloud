@@ -11,6 +11,7 @@ STAMP_FILE=${BASE_DIR}/last-update
 LOG_BASE_DIR=${BASE_DIR}/logs
 VIRTUALENV_DIR=${BASE_DIR}/appstream
 
+ARCHES="#ARCHES#"
 RELEASES="#RELEASES#"
 
 for release in ${RELEASES}; do
@@ -31,7 +32,7 @@ NOW=`date "+%d_%H%M"`
 LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
-debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restricted -a amd64 --nosource -d $(echo ${RELEASES} | sed -e 's/ /,/g') --getcontents --no-check-gpg --method http /srv/data/mirror
+debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restricted -a $(echo ${ARCHES} | sed -e 's/ /,/g') --nosource -d $(echo ${RELEASES} | sed -e 's/ /,/g') --getcontents --no-check-gpg --method http /srv/data/mirror
 
 . ${VIRTUALENV_DIR}/bin/activate
 

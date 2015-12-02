@@ -16,7 +16,7 @@ RELEASES=$(config-get releases)
 COMPONENTS="main universe multiverse restricted"
 ARCHES=$(config-get arches)
 
-juju-log "Got releases ${RELEASES}"
+juju-log "Got releases ${RELEASES} and arches ${ARCHES}"
 
 cat <<EOF | su - ubuntu
 sed -e 's/#IP#/${IP}/' ${CHARM_DIR}/dep11-config.yml.in > /srv/data/appstream/appstream-workdir/dep11-config.yml
@@ -43,7 +43,7 @@ done
 cat <<EOF | su - ubuntu
 set -e
 
-sed -e 's/#RELEASES#/${RELEASES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+sed -e 's/#RELEASES#/${RELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
 
 chmod a+x ~/update-appstream.sh
 
