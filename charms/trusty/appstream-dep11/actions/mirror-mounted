@@ -24,7 +24,7 @@ fi
 
 juju-log 'Cloning repository'
 
-cat <<EOF | su - ubuntu
+cat <<EOF | su - appstream
 set -e
 
 cd /srv/data/appstream
@@ -38,7 +38,9 @@ fi
 if [ ! -d "appstream" ]; then
     virtualenv --system-site-packages -p /usr/bin/python3 appstream
 fi
+EOF
 
+cat <<EOF | su - ubuntu
 mkdir -p appstream-public appstream-workdir/export logs
 if [ ! -e appstream-workdir/export/logs ]; then
     ln -sf ../logs appstream-workdir/export/logs

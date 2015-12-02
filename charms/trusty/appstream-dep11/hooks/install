@@ -56,6 +56,11 @@ cat <<EOF > /etc/apache2/sites-available/appstream.conf
 </VirtualHost>
 EOF
 
+if ! getent passwd appstream > /dev/null; then
+    addgroup --gid 11111 appstream >/dev/null 2>&1
+    adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
+fi
+
 rm -r /etc/apache2/sites-enabled/000-default.conf
 ln -sf ../sites-available/appstream.conf /etc/apache2/sites-enabled/
 service apache2 restart
