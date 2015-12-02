@@ -5,3 +5,5 @@ mirror-mounted:
             type: string
             description: The device the mirror is available on
     required: [device]
+upgrade:
+    description: Update the code from upstream

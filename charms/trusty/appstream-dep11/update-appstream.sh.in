@@ -35,11 +35,6 @@ debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restr
 
 . ${VIRTUALENV_DIR}/bin/activate
 
-cd ${BUILD_DIR}
-git pull
-python3 setup.py build
-python3 setup.py install
-
 cd ${WORKSPACE_DIR}
 
 for r in ${RELEASES}; do

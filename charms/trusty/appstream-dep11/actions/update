@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+BASE_DIR=/srv/data/appstream
+
+BUILD_DIR=${BASE_DIR}/appstream-dep11
+
+juju-log 'Upgrading charm'
+
+cat <<EOF | su - ubuntu
+cd ${BUILD_DIR}
+git pull
+python3 setup.py build
+python3 setup.py install
+juju-log 'Now at revision $(git rev-parse HEAD)'
+EOF
