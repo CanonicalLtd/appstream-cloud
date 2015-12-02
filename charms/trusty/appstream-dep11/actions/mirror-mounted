@@ -50,6 +50,3 @@ fi
 EOF
 
 . ${CHARM_DIR}/hooks/config-changed
-
-juju-log 'Running update-appstream.sh... (if there is no mirror this will take a long time)'
-su -c "flock -xn /home/ubuntu/lock /home/ubuntu/update-appstream.sh" ubuntu
