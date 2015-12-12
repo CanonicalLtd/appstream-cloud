@@ -12,3 +12,6 @@ if ! getent passwd appstream > /dev/null; then
     juju-log 'upgrade-charm: Changing owner'
     chown -R appstream:appstream /srv/data/appstream/appstream-dep11 /srv/data/appstream/appstream
 fi
+
+# Run the install hook - this will install any new deps etc
+. ${CHARM_DIR}/hooks/install
