@@ -17,6 +17,7 @@ apt-get -y install gir1.2-rsvg-2.0 \
                    python3-gi-cairo \
                    python3-jinja2 \
                    python3-lxml \
+                   python3-matplotlib \
                    python3-pil \
                    python3-pygments \
                    python3-setuptools \
