@@ -62,7 +62,7 @@ if ! getent passwd appstream > /dev/null; then
     adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
 fi
 
-rm -r /etc/apache2/sites-enabled/000-default.conf
+rm -f /etc/apache2/sites-enabled/appstream.conf
 ln -sf ../sites-available/appstream.conf /etc/apache2/sites-enabled/
 service apache2 restart
 open-port 80
