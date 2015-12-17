@@ -1,0 +1,11 @@
+#!/bin/sh
+
+juju-log "Running update-appstream.sh now"
+
+cat <<EOF | su - ubuntu
+if grep -qs /srv/data /proc/mounts; then
+    flock -xn /home/ubuntu/lock /home/ubuntu/update-appstream.sh
+fi
+EOF
+
+juju-log "Done"
