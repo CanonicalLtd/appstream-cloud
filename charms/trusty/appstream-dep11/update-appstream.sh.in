@@ -42,8 +42,10 @@ for r in ${RELEASES}; do
     dep11-generator process . ${release}
 done
 
+dep11-generator cleanup ${WORKSPACE_DIR}
+
 for release in ${RELEASES}; do
-    dep11-generator update-html . ${release}
+    dep11-generator update-reports . ${release}
 done
 
 rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
