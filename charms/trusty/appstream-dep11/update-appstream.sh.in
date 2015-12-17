@@ -65,4 +65,4 @@ rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
 
 # finish logging
-kexec > /dev/null 2>&1
+exec > /dev/null 2>&1
