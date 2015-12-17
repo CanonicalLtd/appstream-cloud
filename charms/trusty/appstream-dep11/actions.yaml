@@ -7,3 +7,5 @@ mirror-mounted:
     required: [device]
 upgrade:
     description: Update the code from upstream
+clean:
+    description: Clean up so that the next run forces a full refresh

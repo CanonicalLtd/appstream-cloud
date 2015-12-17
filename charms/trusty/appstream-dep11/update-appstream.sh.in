@@ -10,6 +10,7 @@ WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
 STAMP_FILE=${BASE_DIR}/last-update
 LOG_BASE_DIR=${BASE_DIR}/logs
 VIRTUALENV_DIR=${BASE_DIR}/appstream
+CLEAN_FILE=${BASE_DIR}/clean
 
 ARCHES="#ARCHES#"
 RELEASES="#RELEASES#"
@@ -39,10 +40,18 @@ debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restr
 cd ${WORKSPACE_DIR}
 
 for r in ${RELEASES}; do
+    if [ -e "${CLEAN_FILE}" ]; then
+        dep11-generator remove-processed . ${release}
+    fi
     dep11-generator process . ${release}
 done
 
 dep11-generator cleanup ${WORKSPACE_DIR}
+
+if [ -e "${CLEAN_FILE}" ]; then
+    rm -rf "${WORKSPACE_DIR}/media"
+    rm "${CLEAN_FILE}"
+fi
 
 for release in ${RELEASES}; do
     dep11-generator update-reports . ${release}

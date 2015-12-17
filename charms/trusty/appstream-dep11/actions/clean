@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+BASE_DIR=/srv/data/appstream
+
+touch "${BASE_DIR}/clean"
+
+juju-log "Data will be cleaned at the time of the next run"
