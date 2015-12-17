@@ -39,6 +39,10 @@ debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restr
 
 cd ${WORKSPACE_DIR}
 
+if [ -e "${CLEAN_FILE}" ]; then
+    echo "Also cleaning up"
+fi
+
 for r in ${RELEASES}; do
     if [ -e "${CLEAN_FILE}" ]; then
         dep11-generator remove-processed . ${release}
@@ -61,4 +65,4 @@ rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
 
 # finish logging
-exec > /dev/null 2>&1
+kexec > /dev/null 2>&1
