@@ -50,7 +50,7 @@ chmod a+x ~/update-appstream.sh
 if ! crontab -l | grep -qs update-appstream; then
     echo "0 * * * * flock -xn ~/lock ~/update-appstream.sh" | crontab -
 fi
-if grep -qs /srv/data /proc/mounts; then
+if grep -qs /srv/data /proc/mounts && [ ! -e /home/ubuntu/lock ]; then
     flock -xn /home/ubuntu/lock /home/ubuntu/update-appstream.sh
 fi
 EOF
