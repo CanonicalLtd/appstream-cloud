@@ -5,7 +5,7 @@ mirror-mounted:
             type: string
             description: The device the mirror is available on
     required: [device]
-upgrade:
+update:
     description: Update the code from upstream
 clean:
     description: Clean up so that the next run forces a full refresh
