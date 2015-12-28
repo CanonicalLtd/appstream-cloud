@@ -19,5 +19,5 @@ python3 setup.py install
 EOF
 
     cd ${BUILD_DIR}
-    juju-log 'Now at revision $(git rev-parse HEAD)'
+    juju-log "Now at revision $(git rev-parse HEAD)"
 fi
