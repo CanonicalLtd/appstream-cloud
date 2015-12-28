@@ -31,8 +31,6 @@ cd /srv/data/appstream
 
 if [ ! -d "appstream-dep11" ]; then
     git clone https://github.com/ximion/appstream-dep11.git
-else
-    ( cd appstream-dep11; git pull )
 fi
 
 if [ ! -d "appstream" ]; then
