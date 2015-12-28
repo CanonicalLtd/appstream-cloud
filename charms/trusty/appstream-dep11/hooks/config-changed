@@ -39,6 +39,7 @@ EOF
         for arch in ${ARCHES}; do
             echo "      - ${arch}" >> /srv/data/appstream/appstream-workdir/dep11-config.yml
         done
+        echo "    useIconTheme: Humanity" >> /srv/data/appstream/appstream-workdir/dep11-config.yml
     done
 done
 
