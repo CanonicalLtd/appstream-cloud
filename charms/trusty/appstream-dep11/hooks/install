@@ -35,6 +35,10 @@ juju-log 'Installing web server'
 
 apt-get -y install apache2
 
+juju-log 'Installing rsyncd'
+
+apt-get -y install rsync xinetd
+
 juju-log 'Installing config files'
 
 cat <<EOF > /etc/apache2/sites-available/appstream.conf
@@ -57,6 +61,34 @@ cat <<EOF > /etc/apache2/sites-available/appstream.conf
 </VirtualHost>
 EOF
 
+sed -i "/^RSYNC_ENABLE/ s/=.*/=inetd/" /etc/default/rsync
+
+cat <<EOF > /etc/xinetd.d/rsync
+service rsync {
+    disable = no
+    socket_type = stream
+    wait = no
+    user = root
+    server = /usr/bin/rsync
+    server_args = --daemon
+    log_on_failure += USERID
+}
+EOF
+
+cat <<EOF > /etc/rsyncd.conf
+max connections = 20
+log file = /var/log/rsync.log
+timeout = 300
+use chroot = false
+
+[appstream]
+    path = /srv/data/appstream/appstream-public/data
+    read only = yes
+    list = yes
+    uid = appstream
+    gid = appstream
+EOF
+
 if ! getent passwd appstream > /dev/null; then
     addgroup --gid 11111 appstream >/dev/null 2>&1
     adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
@@ -66,3 +98,6 @@ rm -f /etc/apache2/sites-enabled/appstream.conf
 ln -sf ../sites-available/appstream.conf /etc/apache2/sites-enabled/
 service apache2 restart
 open-port 80
+
+service xinetd restart
+open-port 873
