@@ -36,6 +36,8 @@ fi
 if [ ! -d "appstream" ]; then
     virtualenv --system-site-packages -p /usr/bin/python3 appstream
 fi
+
+. ${CHARM_DIR}/actions/update
 EOF
 
 cat <<EOF | su - ubuntu
