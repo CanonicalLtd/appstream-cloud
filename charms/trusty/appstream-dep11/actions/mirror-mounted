@@ -16,7 +16,7 @@ chown ubuntu:ubuntu /srv/data
 
 if ! mount -t ext4 ${device} /srv/data; then
     juju-log 'No filesystem - creating...'
-    mkfs.ext4 /dev/vdc
+    mkfs.ext4 ${device}
     mount -t ext4 ${device} /srv/data
 else
     juju-log 'mounted'
