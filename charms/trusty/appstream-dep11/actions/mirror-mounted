@@ -23,7 +23,7 @@ else
 fi
 
 mkdir -p /srv/data/appstream
-chown ubuntu:ubuntu /srv/data/appstream
+chown appstream:appstream /srv/data/appstream
 
 mkdir -p /srv/data/mirror
 chown ubuntu:ubuntu /srv/data/mirror
@@ -45,6 +45,8 @@ fi
 
 . ${CHARM_DIR}/actions/update
 EOF
+
+chown ubuntu:ubuntu /srv/data/appstream
 
 cat <<EOF | su - ubuntu
 mkdir -p appstream-public appstream-workdir/export logs
