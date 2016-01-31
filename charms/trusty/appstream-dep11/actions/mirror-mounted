@@ -49,6 +49,9 @@ EOF
 chown ubuntu:ubuntu /srv/data/appstream
 
 cat <<EOF | su - ubuntu
+
+cd /srv/data/appstream
+
 mkdir -p appstream-public appstream-workdir/export logs
 if [ ! -e appstream-workdir/export/logs ]; then
     ln -sf ../logs appstream-workdir/export/logs
