@@ -22,6 +22,12 @@ else
     juju-log 'mounted'
 fi
 
+mkdir -p /srv/data/appstream
+chown ubuntu:ubuntu /srv/data/appstream
+
+mkdir -p /srv/data/mirror
+chown ubuntu:ubuntu /srv/data/mirror
+
 juju-log 'Cloning repository'
 
 cat <<EOF | su - appstream
