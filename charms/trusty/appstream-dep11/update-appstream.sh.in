@@ -33,7 +33,7 @@ NOW=`date "+%d_%H%M"`
 LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
-debmirror -p -h nova.clouds.archive.ubuntu.com -s main,universe,multiverse,restricted -a $(echo ${ARCHES} | sed -e 's/ /,/g') --nosource -d $(echo ${RELEASES} | sed -e 's/ /,/g') --getcontents --no-check-gpg --method http /srv/data/mirror
+debmirror -p -h #MIRROR# -s main,universe,multiverse,restricted -a $(echo ${ARCHES} | sed -e 's/ /,/g') --nosource -d $(echo ${RELEASES} | sed -e 's/ /,/g') --getcontents --no-check-gpg --method http /srv/data/mirror
 
 . ${VIRTUALENV_DIR}/bin/activate
 

@@ -9,3 +9,5 @@ options:
         type: string
     arches:
         default: amd64 arm64 armhf i386 powerpc ppc64el
+    mirror:
+        default: archive.ubuntu.com

@@ -17,6 +17,7 @@ juju-log "Got IP ${IP}"
 RELEASES=$(config-get releases)
 COMPONENTS="main universe multiverse restricted"
 ARCHES=$(config-get arches)
+MIRROR=$(config-get mirror)
 
 juju-log "Got releases ${RELEASES} and arches ${ARCHES}"
 
@@ -46,7 +47,7 @@ done
 cat <<EOF | su - ubuntu
 set -e
 
-sed -e 's/#RELEASES#/${RELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+sed -e 's/#RELEASES#/${RELEASES}/; s/#ARCHES#/${ARCHES}/; s/#MIRROR#/${MIRROR}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
 
 chmod a+x ~/update-appstream.sh
 
