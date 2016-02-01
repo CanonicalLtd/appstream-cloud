@@ -43,7 +43,7 @@ if [ -e "${CLEAN_FILE}" ]; then
     echo "Also cleaning up"
 fi
 
-for r in ${RELEASES}; do
+for release in ${RELEASES}; do
     if [ -e "${CLEAN_FILE}" ]; then
         dep11-generator remove-processed . ${release}
     fi
