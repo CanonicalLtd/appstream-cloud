@@ -7,8 +7,6 @@ BASE_DIR=/srv/data/appstream
 BUILD_DIR=${BASE_DIR}/appstream-dep11
 VIRTUALENV_DIR=${BASE_DIR}/appstream
 
-juju-log 'Upgrading charm'
-
 if [ -d "${BUILD_DIR}" ]; then
     cat <<EOF | su - appstream
 cd ${BUILD_DIR}
