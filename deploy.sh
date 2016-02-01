@@ -5,8 +5,6 @@ MYDIR=$(dirname "$(readlink -f $0)")
 VOLUMENAME=mirror
 VOLUMESIZE=500 # GB
 
-IP=162.213.34.169
-
 get_volume_field() {
     name=$1
     field=$2
@@ -140,8 +138,8 @@ else
     # temporarily set arches to amd64 only
     cat << EOF >> "${config_yaml}"
 appstream-dep11:
-    ip: ${IP}
-    arches: amd64
+    ip: ${IP:-162.213.34.169}
+    arches: ${ARCHES:-amd64}
     mirror: ${MIRROR:-archive.ubuntu.com}
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${config_yaml}" --constraints "cpu-cores=8 mem=8G" local:trusty/appstream-dep11
