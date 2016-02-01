@@ -142,6 +142,7 @@ else
 appstream-dep11:
     ip: ${IP}
     arches: amd64
+    mirror: ${MIRROR:-archive.ubuntu.com}
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${config_yaml}" --constraints "cpu-cores=8 mem=8G" local:trusty/appstream-dep11
     wait_deployed appstream-dep11
