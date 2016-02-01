@@ -42,11 +42,12 @@ fi
 if [ ! -d "appstream" ]; then
     virtualenv --system-site-packages -p /usr/bin/python3 appstream
 fi
-
-. ${CHARM_DIR}/actions/update
 EOF
 
 chown ubuntu:ubuntu /srv/data/appstream
+
+juju-log 'Updating'
+. ${CHARM_DIR}/actions/update
 
 cat <<EOF | su - ubuntu
 
