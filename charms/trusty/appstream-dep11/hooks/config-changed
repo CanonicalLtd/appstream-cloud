@@ -29,6 +29,7 @@ for r in ${RELEASES}; do
     for release in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
         cat <<EOF >> /srv/data/appstream/appstream-workdir/dep11-config.yml
   ${release}:
+    baseSuite: ${r}
     components:
 EOF
 
