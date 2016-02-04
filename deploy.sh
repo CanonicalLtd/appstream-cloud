@@ -110,6 +110,11 @@ subordinate_charms() {
     if ! juju status "${1}" | grep -q landscape; then
         juju add-relation landscape-client "$1"
     fi
+
+    if ! juju status "${1}" | grep -q nrpe-external-master; then
+        juju add-relation nrpe-external-master "$1"
+    fi
+
     wait_deployed "$1"
 }
 
@@ -150,6 +155,14 @@ landscape-client:
   tags: juju-managed, devops-instance, devops-production
 EOF
         juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:trusty/landscape-client
+    fi
+
+    if ! juju status | grep -q nrpe-external-master:; then
+        cat <<EOF >> "${CONFIG_YAML}"
+nrpe-external-master:
+  nagios_master=wendigo.canonical.com
+EOF
+        juju deploy --config "${CONFIG_YAML}" cs:trusty/nrpe-external-master
     fi
 
     #
