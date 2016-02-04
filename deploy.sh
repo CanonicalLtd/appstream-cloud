@@ -127,6 +127,7 @@ extra_prodstack_configuration() {
     #
     [ -d "$MYDIR/charms/trusty/landscape-client" ] || bzr checkout --lightweight lp:charms/trusty/landscape-client "$MYDIR/charms/trusty/landscape-client"
     [ -d "$MYDIR/charms/trusty/ksplice" ] || { echo "Please check out ksplice charm to $MYDIR/charms/trusty"; exit 1; }
+    [ -d "$MYDIR/charms/trusty/nrpe-external-master" ] || { echo "Please check out nrpe-external-master charm to ${MYDIR}/charms/trusty"; exit 1; }
 
     [ -d "$MYDIR/basenode" ] || { echo "Please check out basenode into $MYDIR"; exit 1; }
     for charmdir in $MYDIR/charms/trusty/*; do
@@ -162,7 +163,7 @@ EOF
 nrpe-external-master:
   nagios_master=wendigo.canonical.com
 EOF
-        juju deploy --config "${CONFIG_YAML}" cs:trusty/nrpe-external-master
+        juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
     fi
 
     #
