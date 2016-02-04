@@ -161,7 +161,7 @@ EOF
     if ! juju status | grep -q nrpe-external-master:; then
         cat <<EOF >> "${CONFIG_YAML}"
 nrpe-external-master:
-  nagios_master=wendigo.canonical.com
+  nagios_master: wendigo.canonical.com
 EOF
         juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
     fi
