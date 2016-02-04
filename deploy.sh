@@ -102,7 +102,7 @@ subordinate_charms() {
         return
     fi
 
-    echo 'deploying subordinate charms to $1'
+    echo "deploying subordinate charms to $1"
     if ! juju status "${1}" | grep -q ksplice; then
         juju add-relation ksplice "$1"
     fi
