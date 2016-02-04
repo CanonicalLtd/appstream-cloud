@@ -162,8 +162,11 @@ EOF
         cat <<EOF >> "${CONFIG_YAML}"
 nrpe-external-master:
   nagios_master: wendigo.canonical.com
+  nagios_host_context: prod-ue-appstream
 EOF
         juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
+        # nagios wants to ping us
+        nova secgroup-add-rule juju-${PROJECT} icmp -1 -1 0.0.0.0/0
     fi
 
     #
