@@ -98,6 +98,10 @@ wait_attached() {
 }
 
 subordinate_charms() {
+    if ! juju status | grep -q "${1}"; then
+        return
+    fi
+
     echo 'deploying subordinate charms to $1'
     if ! juju status "${1}" | grep -q ksplice; then
         juju add-relation ksplice "$1"
@@ -158,9 +162,7 @@ EOF
     fi
     subordinate_charms "bootstrap-node"
 
-    if [ -n "${DEPLOYED_APPSTREAM}" ]; then
-        subordinate_charms "appstream-dep11"
-    fi
+    subordinate_charms "appstream-dep11"
 }
 
 if [ -z "$OS_PASSWORD" ]; then
