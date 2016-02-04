@@ -110,7 +110,7 @@ subordinate_charms() {
 }
 
 extra_prodstack_configuration() {
-    if [ -n "${PRODSTACK}" ]; then
+    if [ -z "${PRODSTACK}" ]; then
         return
     fi
     #
