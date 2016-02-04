@@ -142,7 +142,7 @@ landscape-client:
   url: https://landscape.is.canonical.com/message-system
   ping-url: http://landscape.is.canonical.com/ping
   account-name: standalone
-  registration-key: $(cat /srv/mojo/LOCAL/mojo-prod-${PROJECT}/canonical-is-landscape.key)
+  registration-key: $(cat /srv/mojo/LOCAL/mojo-${PROJECT}/canonical-is-landscape.key)
   tags: juju-managed, devops-instance, devops-production
 EOF
         juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:trusty/landscape-client
