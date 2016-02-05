@@ -1,5 +1,15 @@
 #!/bin/sh
 
+BASE_DIR=/srv/data/appstream
+VIRTUALENV_DIR=${BASE_DIR}/appstream
+WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
+
 PACKAGES="$(action-get --format=json packages | jq -r '.[]')"
 
-juju-log "Forgetting ${PACKAGES}"
+for pkg in ${PACKAGES}; do
+    juju-log "Forgetting ${pkg}"
+    cat <<EOF | su - appstream
+. ${VIRTUALENV_DIR}/bin/activate
+dep11-generator forget ${WORKSPACE_DIR} ${pkg}
+EOF
+done
