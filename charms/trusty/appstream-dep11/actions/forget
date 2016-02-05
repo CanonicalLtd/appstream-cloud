@@ -1,15 +1,7 @@
 #!/bin/sh
 
 BASE_DIR=/srv/data/appstream
-VIRTUALENV_DIR=${BASE_DIR}/appstream
-WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
+FORGET_FILE=${BASE_DIR}/forget
 
-PACKAGES="$(action-get --format=json packages | jq -r '.[]')"
-
-for pkg in ${PACKAGES}; do
-    juju-log "Forgetting ${pkg}"
-    cat <<EOF | su - ubuntu
-. ${VIRTUALENV_DIR}/bin/activate
-dep11-generator forget ${WORKSPACE_DIR} ${pkg}
-EOF
-done
+echo "CLEAN_PKGS=\"$(action-get --format=json packages | jq -r '.[]')\"" > ${FORGET_FILE}
+chown ubuntu:ubuntu ${FORGET_FILE}
