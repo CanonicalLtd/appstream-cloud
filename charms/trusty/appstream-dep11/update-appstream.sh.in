@@ -42,7 +42,7 @@ cd ${WORKSPACE_DIR}
 
 if [ -e "${FORGET_FILE}" ]; then
     . ${FORGET_FILE}
-    for pkg in CLEAN_PKGS; do
+    for pkg in ${CLEAN_PKGS}; do
         dep11-generator forget . ${pkg}
     done
     rm ${FORGET_FILE}
