@@ -1,0 +1,5 @@
+#!/bin/sh
+
+PACKAGES=$(action-get packages)
+
+juju-log "Forgetting ${PACKAGES}"

@@ -11,3 +11,9 @@ clean:
     description: Clean up so that the next run forces a full refresh
 run-now:
     description: Run an update immediately
+forget:
+    description: Forget packages from all releases, causing them to be reprocessed the next time
+    params:
+        packages:
+            type: array
+            items: {type: string}
