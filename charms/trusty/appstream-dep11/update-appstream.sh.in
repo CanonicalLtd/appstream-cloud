@@ -40,6 +40,14 @@ debmirror -p -h #MIRROR# -s main,universe,multiverse,restricted -a $(echo ${ARCH
 
 cd ${WORKSPACE_DIR}
 
+if [ -e "${FORGET_FILE}" ]; then
+    . ${FORGET_FILE}
+    for pkg in CLEAN_PKGS; do
+        dep11-generator forget . ${pkg}
+    done
+    rm ${FORGET_FILE}
+fi
+
 if [ -e "${CLEAN_FILE}" ]; then
     echo "Also cleaning up"
 fi
@@ -50,14 +58,6 @@ for release in ${RELEASES}; do
     fi
     dep11-generator process . ${release}
 done
-
-if [ -e "${FORGET_FILE}" ]; then
-    . ${FORGET_FILE}
-    for pkg in CLEAN_PKGS; do
-        dep11-generator forget . ${pkg}
-    done
-    rm ${FORGET_FILE}
-fi
 
 dep11-generator cleanup ${WORKSPACE_DIR}
 
