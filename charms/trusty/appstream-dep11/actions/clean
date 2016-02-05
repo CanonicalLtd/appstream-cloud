@@ -5,6 +5,6 @@ set -e
 BASE_DIR=/srv/data/appstream
 
 touch "${BASE_DIR}/clean"
-sudo chown ubuntu:ubuntu "${BASE_DIR}/clean"
+chown ubuntu:ubuntu "${BASE_DIR}/clean"
 
 juju-log "Data will be cleaned at the time of the next run"
