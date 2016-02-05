@@ -28,7 +28,6 @@ apt-get -y -t trusty-backports install python3-lmdb
 
 juju-log 'Installing utilities'
 
-# jq for config-changed hook
 apt-get -y install git python-virtualenv debmirror
 
 juju-log 'Installing web server'
@@ -38,6 +37,10 @@ apt-get -y install apache2
 juju-log 'Installing rsyncd'
 
 apt-get -y install rsync
+
+juju-log 'Installing jq (for forget action)'
+
+apt-get -y install jq
 
 juju-log 'Installing config files'
 

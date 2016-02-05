@@ -1,5 +1,5 @@
 #!/bin/sh
 
-PACKAGES="$(action-get packages)"
+PACKAGES="$(action-get --format=json packages | jq -r '.[]')"
 
 juju-log "Forgetting ${PACKAGES}"
