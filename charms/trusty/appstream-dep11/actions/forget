@@ -8,7 +8,7 @@ PACKAGES="$(action-get --format=json packages | jq -r '.[]')"
 
 for pkg in ${PACKAGES}; do
     juju-log "Forgetting ${pkg}"
-    cat <<EOF | su - appstream
+    cat <<EOF | su - ubuntu
 . ${VIRTUALENV_DIR}/bin/activate
 dep11-generator forget ${WORKSPACE_DIR} ${pkg}
 EOF
