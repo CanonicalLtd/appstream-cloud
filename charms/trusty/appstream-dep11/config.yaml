@@ -11,3 +11,6 @@ options:
         default: amd64 arm64 armhf i386 powerpc ppc64el
     mirror:
         default: archive.ubuntu.com
+    http_proxy:
+    https_proxy:
+    no_proxy:
