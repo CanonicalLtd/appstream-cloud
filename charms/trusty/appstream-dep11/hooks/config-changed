@@ -48,12 +48,11 @@ done
 juju-log 'Adding proxy settings'
 
 for var in http_proxy https_proxy no_proxy; do
-    if ! grep -qs "${var}" /etc/environment; then
-        v=$(config-get ${var})
-        if [ -n "${v}" ]; then
-            juju-log "Setting ${var}=${v}"
-            echo "${var}=${v}" >> /etc/environment
-        fi
+    sed -i "/^${var}/d" /etc/environment
+    v=$(config-get ${var})
+    if [ -n "${v}" ]; then
+        juju-log "Setting ${var}=${v}"
+        echo "${var}=${v}" >> /etc/environment
     fi
 done
 
