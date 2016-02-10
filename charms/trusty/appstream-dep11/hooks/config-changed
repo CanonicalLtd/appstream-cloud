@@ -14,6 +14,12 @@ IP=$(config-get ip)
 
 juju-log "Got IP ${IP}"
 
+HOSTNAME=$(config-get hostname)
+
+if [ -n "${HOSTNAME}" ]; then
+    juju-log "Got hostname ${HOSTNAME}"
+fi
+
 RELEASES=$(config-get releases)
 COMPONENTS="main universe multiverse restricted"
 ARCHES=$(config-get arches)
@@ -22,7 +28,7 @@ MIRROR=$(config-get mirror)
 juju-log "Got releases ${RELEASES} and arches ${ARCHES} and mirror ${MIRROR}"
 
 cat <<EOF | su - ubuntu
-sed -e 's/#IP#/${IP}/' ${CHARM_DIR}/dep11-config.yml.in > /srv/data/appstream/appstream-workdir/dep11-config.yml
+sed -e 's/#HOSTNAME#/${HOSTNAME:-${IP}}/' ${CHARM_DIR}/dep11-config.yml.in > /srv/data/appstream/appstream-workdir/dep11-config.yml
 EOF
 
 for r in ${RELEASES}; do

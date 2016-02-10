@@ -55,8 +55,12 @@ cat <<EOF > /etc/apache2/sites-available/appstream.conf
     Require all granted
 </Directory>
 
+Alias /data /srv/data/appstream/appstream-public/data
+Alias /media /srv/data/appstream/appstream-public/media
+Alias /logs /srv/data/appstream/appstream-public/logs
+Alias /hints /srv/data/appstream/appstream-public/hints
 <VirtualHost *:80>
-    DocumentRoot /srv/data/appstream/appstream-public
+    DocumentRoot /srv/data/appstream/appstream-public/html
     ErrorLog \${APACHE_LOG_DIR}/error.log
     CustomLog \${APACHE_LOG_DIR}/custom.log combined
     AddType 'text/plain' .log

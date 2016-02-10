@@ -1,5 +1,5 @@
 ArchiveRoot: /srv/data/mirror/
-MediaBaseUrl: http://#IP#/media/
-HtmlBaseUrl: http://#IP#/html/
+MediaBaseUrl: http://#HOSTNAME#/media/
+HtmlBaseUrl: http://#HOSTNAME#/
 DistroName: Ubuntu
 Suites:

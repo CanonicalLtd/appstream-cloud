@@ -3,6 +3,9 @@ options:
         default: 127.0.0.1
         description: The public external IP of the appstream service
         type: string
+    hostname:
+        description: The hostname the service will be presented on
+        type: string
     releases:
         default: xenial
         description: The releases to act on (space separated)
