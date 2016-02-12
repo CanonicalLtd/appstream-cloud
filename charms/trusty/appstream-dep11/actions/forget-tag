@@ -11,7 +11,7 @@ TAG_TO_FORGET=$(action-get tag)
 
 juju-log "Forgetting all packages with ${TAG_TO_FORGET}"
 
-PKGS=$(${CHARM_DIR}/forget ${TAG_TO_FORGET})
+PKGS=$(${CHARM_DIR}/forget $(echo ${TAG_TO_FORGET} | tr '\n' ' '))
 
 juju-log "Forgetting ${PKGS}"
 
