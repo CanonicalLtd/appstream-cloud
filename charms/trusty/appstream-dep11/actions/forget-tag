@@ -3,7 +3,9 @@
 BASE_DIR=/srv/data/appstream
 FORGET_FILE=${BASE_DIR}/forget
 
-. ${FORGET_FILE}
+if [ -e "${FORGET_FILE}" ]; then
+    . ${FORGET_FILE}
+fi
 
 TAG_TO_FORGET=$(action-get tag)
 

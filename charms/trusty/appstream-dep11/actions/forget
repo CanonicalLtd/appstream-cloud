@@ -3,7 +3,9 @@
 BASE_DIR=/srv/data/appstream
 FORGET_FILE=${BASE_DIR}/forget
 
-. ${FORGET_FILE}
+if [ -e "${FORGET_FILE}" ]; then
+    . ${FORGET_FILE}
+fi
 
 echo "CLEAN_PKGS=\"${CLEAN_PKGS:+${CLEAN_PKGS} }$(action-get --format=json packages | jq -r '.[]')\"" >> ${FORGET_FILE}
 chown ubuntu:ubuntu ${FORGET_FILE}
