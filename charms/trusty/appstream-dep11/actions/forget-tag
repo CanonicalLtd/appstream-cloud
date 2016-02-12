@@ -7,7 +7,7 @@ FORGET_FILE=${BASE_DIR}/forget
 
 TAG_TO_FORGET=$(action-get tag)
 
-PKGS=$(./forget ${TAG_TO_FORGET})
+PKGS=$(${CHARM_DIR}/forget ${TAG_TO_FORGET})
 
 echo "CLEAN_PKGS=\"${CLEAN_PKGS:+${CLEAN_PKGS} }${PKGS}\"" >> ${FORGET_FILE}
 chown ubuntu:ubuntu ${FORGET_FILE}
