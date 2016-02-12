@@ -24,4 +24,4 @@ forget-tag:
         tag:
             type: string
             description: The tag to forget
-        required: [tag]
+    required: [tag]
