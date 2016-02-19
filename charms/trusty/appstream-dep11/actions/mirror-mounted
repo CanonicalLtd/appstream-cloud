@@ -17,7 +17,9 @@ chown ubuntu:ubuntu /srv/data
 if ! mount -t ext4 ${device} /srv/data; then
     juju-log 'No filesystem - creating...'
     mkfs.ext4 ${device}
-    mount -t ext4 ${device} /srv/data
+    UUID=$(blkid -s UUID -o value ${device})
+    echo "UUID=${UUID} /srv/data ext4 defaults 0 0" >> /etc/fstab
+    mount /srv/data
 else
     juju-log 'mounted'
 fi
