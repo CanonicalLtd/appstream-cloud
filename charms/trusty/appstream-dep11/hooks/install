@@ -68,6 +68,7 @@ Alias /hints /srv/data/appstream/appstream-public/hints
 </VirtualHost>
 EOF
 
+mkdir -p /etc/rsync-juju.d/
 cat <<EOF > /etc/rsync-juju.d/appstream.conf
 [appstream]
     path = /srv/data/appstream/appstream-public/data
