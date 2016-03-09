@@ -78,6 +78,15 @@ cat <<EOF > /etc/rsync-juju.d/appstream.conf
     gid = appstream
 EOF
 
+cat <<EOF > /etc/rsync-juju.d/www.conf
+[www]
+    path = /srv/data/appstream/appstream-public
+    read only = yes
+    list = yes
+    uid = ubuntu
+    gid = ubuntu
+EOF
+
 if ! getent passwd appstream > /dev/null; then
     addgroup --gid 11111 appstream >/dev/null 2>&1
     adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
