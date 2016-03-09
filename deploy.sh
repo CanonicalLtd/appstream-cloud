@@ -4,7 +4,7 @@ MYDIR=$(dirname "$(readlink -f $0)")
 PROJECT=prod-ue-appstream-back
 
 VOLUMENAME=mirror
-VOLUMESIZE=500 # GB
+VOLUMESIZE=750 # GB
 
 get_volume_field() {
     name=$1
