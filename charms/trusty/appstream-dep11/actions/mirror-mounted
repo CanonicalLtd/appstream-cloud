@@ -14,6 +14,12 @@ juju-log "Running mirror-mounted (device is ${device})"
 mkdir -p /srv/data
 chown ubuntu:ubuntu /srv/data
 
+UUID=$(blkid -s UUID -o value ${device})
+if [ -n "${UUID}" ]; then
+       juju-log "Volume is ${UUID}"
+       echo "UUID=${UUID} /srv/data ext4 defaults 0 0" >> /etc/fstab
+fi
+
 if ! mount /srv/data; then
     juju-log 'No filesystem - creating...'
     mkfs.ext4 ${device}
