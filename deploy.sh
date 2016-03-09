@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MYDIR=$(dirname "$(readlink -f $0)")
-PROJECT=prod-ue-appstream
+PROJECT=prod-ue-appstream-back
 
 VOLUMENAME=mirror
 VOLUMESIZE=500 # GB
@@ -162,7 +162,7 @@ EOF
         cat <<EOF >> "${CONFIG_YAML}"
 nrpe-external-master:
   nagios_master: wendigo.canonical.com
-  nagios_host_context: prod-ue-appstream
+  nagios_host_context: ${PROJECT}
 EOF
         juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
         # nagios wants to ping us
