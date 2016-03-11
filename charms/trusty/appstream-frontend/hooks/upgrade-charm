@@ -1,0 +1,3 @@
+#!/bin/sh
+
+. ${CHARM_DIR}/hooks/install
