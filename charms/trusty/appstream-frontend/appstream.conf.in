@@ -1,0 +1,22 @@
+<Directory /srv/appstream>
+    Options Indexes FollowSymLinks
+    Require all granted
+</Directory>
+
+<Directory /srv/appstream/logs>
+    Options Indexes
+    Require all granted
+</Directory>
+
+Alias /data /srv/appstream/data
+Alias /media /srv/appstream/media
+Alias /logs /srv/appstream/logs
+Alias /hints /srv/appstream/hints
+<VirtualHost *:80>
+    ServerName @EXTERNAL_HOSTNAME@
+    DocumentRoot /srv/appstream/html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/custom.log combined
+    AddType 'text/plain' .log
+    AddCharset UTF-8 .log
+</VirtualHost>

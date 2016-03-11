@@ -1,0 +1,14 @@
+#!/bin/sh
+
+EXTERNAL_HOSTNAME=$(config-get external-hostname)
+juju-log "External host is '${EXTERNAL_HOSTNAME}'"
+
+apt-get -y install rsync
+
+mkdir -p /srv/appstream /srv/appstream-new
+
+chown ubuntu:ubuntu /srv/appstream /srv/appstream-new
+
+a2ensite appstream
+
+/etc/init.d/apache2 reload

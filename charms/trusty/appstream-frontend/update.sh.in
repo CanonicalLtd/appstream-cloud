@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+BASE_DIR=${HOME}
+
+LOG_BASE_DIR=${BASE_DIR}/logs
+
+# Start logging
+logdir="${LOG_BASE_DIR}/`date "+%Y/%m"`"
+mkdir -p ${logdir}
+NOW=`date "+%d_%H%M"`
+LOGFILE="${logdir}/${NOW}.log"
+exec >> "${LOGFILE}" 2>&1
+
+rsync -avzP --delete --delete-after @RSYNC_HOST@::www /srv/appstream-new
+rm -r /srv/appstream/*
+mv /srv/appstream-new/* /srv/appstream/
+
+# finish logging
+exec > /dev/null 2>&1

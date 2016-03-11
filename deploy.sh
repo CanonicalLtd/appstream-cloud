@@ -198,7 +198,7 @@ else
     # temporarily set arches to amd64 only
     cat << EOF >> "${CONFIG_YAML}"
 appstream-dep11:
-    hostname: ${HOSTNAME:-${IP:-162.213.34.169}}
+    hostname: ${HOSTNAME:-}
     arches: ${ARCHES:-amd64}
     mirror: ${MIRROR:-archive.ubuntu.com}
     http_proxy: ${http_proxy:-}
@@ -225,10 +225,9 @@ if [ -n "${DEPLOYED_APPSTREAM}" ]; then
     for unit in ${units}; do
         juju action do ${unit} mirror-mounted device=${device}
     done
-    nova floating-ip-associate ${machine} ${IP}
     juju expose appstream-dep11
     extra_prodstack_configuration
-    echo "Done. Try http://${HOSTNAME:-${IP}}"
+    echo "Done. Now deploy the frontend."
 fi
 
 if [ -n "${APPSTREAM_ALREADY_DEPLOYED}" ]; then

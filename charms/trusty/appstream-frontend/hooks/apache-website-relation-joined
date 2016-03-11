@@ -1,0 +1,16 @@
+#!/bin/sh
+
+RSYNC_HOST=$(config-get rsync-host)
+
+cat <<EOF | su - ubuntu
+set -e
+
+sed -e 's/@RSYNC_HOST@/${RSYNC_HOST}/' ${CHARM_DIR}/update.sh.in > ~/update.sh
+
+chmod a+x ~/update.sh
+
+if ! crontab -l | grep -qs update; then
+    echo "* * * * * flock -xn ~/lock ~/update.sh" | crontab -
+fi
+EOF
+

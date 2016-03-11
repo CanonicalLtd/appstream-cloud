@@ -30,10 +30,6 @@ juju-log 'Installing utilities'
 
 apt-get -y install git python-virtualenv debmirror
 
-juju-log 'Installing web server'
-
-apt-get -y install apache2
-
 juju-log 'Installing rsyncd'
 
 apt-get -y install rsync
@@ -43,30 +39,6 @@ juju-log 'Installing jq (for forget action)'
 apt-get -y install jq
 
 juju-log 'Installing config files'
-
-cat <<EOF > /etc/apache2/sites-available/appstream.conf
-<Directory /srv/data/appstream/appstream-public>
-    Options Indexes FollowSymLinks
-    Require all granted
-</Directory>
-
-<Directory /srv/data/appstream/logs>
-    Options Indexes
-    Require all granted
-</Directory>
-
-Alias /data /srv/data/appstream/appstream-public/data
-Alias /media /srv/data/appstream/appstream-public/media
-Alias /logs /srv/data/appstream/appstream-public/logs
-Alias /hints /srv/data/appstream/appstream-public/hints
-<VirtualHost *:80>
-    DocumentRoot /srv/data/appstream/appstream-public/html
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/custom.log combined
-    AddType 'text/plain' .log
-    AddCharset UTF-8 .log
-</VirtualHost>
-EOF
 
 mkdir -p /etc/rsync-juju.d/
 cat <<EOF > /etc/rsync-juju.d/appstream.conf
@@ -91,11 +63,6 @@ if ! getent passwd appstream > /dev/null; then
     addgroup --gid 11111 appstream >/dev/null 2>&1
     adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
 fi
-
-a2dissite 000-default
-a2ensite appstream
-service apache2 restart
-open-port 80
 
 service rsync restart
 open-port 873

@@ -13,5 +13,13 @@ if ! getent passwd appstream > /dev/null; then
     chown -R appstream:appstream /srv/data/appstream/appstream-dep11 /srv/data/appstream/appstream
 fi
 
+# we used to host apache ourselves, but no more
+if [ -e /etc/apache2/sites-enabled/appstream.conf ]; then
+    juju-log 'upgrade-charm: Purging apache2'
+    rm /etc/apache2/sites-enabled/appstream.conf
+    apt-get -y purge apache2
+    close-port 80
+fi
+
 # Run the install hook - this will install any new deps etc
 . ${CHARM_DIR}/hooks/install

@@ -1,0 +1,9 @@
+name: appstream-frontend
+maintainer: Iain Lane <iain.lane@canonical.com>
+summary: Frontend http interface for appstream.ubuntu.com
+subordinate: true
+description: Subordinate to an apache httpd, this charm install a website config and cron scripts to serve appstream.ubuntu.com
+requires:
+    apache-website:
+        interface: apache-website
+        scope: container
