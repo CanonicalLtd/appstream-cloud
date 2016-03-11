@@ -9,7 +9,7 @@ LOG_BASE_DIR=${BASE_DIR}/logs
 # Start logging
 logdir="${LOG_BASE_DIR}/`date "+%Y/%m"`"
 mkdir -p ${logdir}
-NOW=`date "+%d_%H%M"`
+NOW=`date "+%d"`
 LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
