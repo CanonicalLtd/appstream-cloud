@@ -5,9 +5,9 @@ juju-log "External host is '${EXTERNAL_HOSTNAME}'"
 
 apt-get -y install rsync
 
-mkdir -p /srv/appstream /srv/appstream-new
+mkdir -p /srv/appstream /srv/appstream-new /srv/logs
 
-chown ubuntu:ubuntu /srv/appstream /srv/appstream-new
+chown ubuntu:ubuntu /srv/appstream /srv/appstream-new /srv/logs
 
 sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in > /etc/apache2/sites-available/appstream.conf
 
