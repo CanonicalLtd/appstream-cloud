@@ -1,5 +1,6 @@
 #!/bin/sh
 
+RSYNC_HOST=$(config-get rsync-host)
 EXTERNAL_HOSTNAME=$(config-get external-hostname)
 juju-log "External host is '${EXTERNAL_HOSTNAME}'"
 
@@ -9,3 +10,14 @@ mkdir -p /srv/appstream /srv/appstream-new /srv/logs
 
 chown ubuntu:ubuntu /srv/appstream /srv/appstream-new /srv/logs
 
+cat <<EOF | su - ubuntu
+set -e
+
+sed -e "s/@RSYNC_HOST@/${RSYNC_HOST}/" ${CHARM_DIR}/update.sh.in > ~/update.sh
+
+chmod a+x ~/update.sh
+
+if ! crontab -l | grep -qs update; then
+    echo "* * * * * flock -xn ~/lock ~/update.sh" | crontab -
+fi
+EOF
