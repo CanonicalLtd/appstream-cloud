@@ -14,7 +14,7 @@ LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
 rsync -avzP --delete --delete-after @RSYNC_HOST@::www /srv/appstream-new
-rm -r /srv/appstream/*
+rm -rf /srv/appstream/*
 mv /srv/appstream-new/* /srv/appstream/
 
 # finish logging
