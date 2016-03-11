@@ -1,6 +1,13 @@
 #!/bin/sh
 
 RSYNC_HOST=$(config-get rsync-host)
+EXTERNAL_HOSTNAME=$(config-get external-hostname)
+
+juju relation-set domain=${EXTERNAL_HOSTNAME}
+juju relation-set site_config=$(sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in)
+juju relation-set site_modules="autoindex"
+juju relation-set ports=80
+juju relation-set enabled=true
 
 cat <<EOF | su - ubuntu
 set -e
@@ -13,4 +20,3 @@ if ! crontab -l | grep -qs update; then
     echo "* * * * * flock -xn ~/lock ~/update.sh" | crontab -
 fi
 EOF
-

@@ -9,8 +9,3 @@ mkdir -p /srv/appstream /srv/appstream-new /srv/logs
 
 chown ubuntu:ubuntu /srv/appstream /srv/appstream-new /srv/logs
 
-sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in > /etc/apache2/sites-available/appstream.conf
-
-a2ensite appstream
-
-/etc/init.d/apache2 reload
