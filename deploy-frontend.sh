@@ -42,16 +42,15 @@ subordinate_charms() {
     wait_deployed "$1"
 }
 
-extra_prodstack_configuration() {
-    if [ -z "${PRODSTACK}" ]; then
-        return
-    fi
+checkout() {
     #
     # install/update basenode into charms
     #
     [ -d "$MYDIR/charms/trusty/landscape-client" ] || bzr checkout --lightweight lp:charms/trusty/landscape-client "$MYDIR/charms/trusty/landscape-client"
     [ -d "$MYDIR/charms/trusty/ksplice" ] || { echo "Please check out ksplice charm to $MYDIR/charms/trusty"; exit 1; }
     [ -d "$MYDIR/charms/trusty/nrpe-external-master" ] || { echo "Please check out nrpe-external-master charm to ${MYDIR}/charms/trusty"; exit 1; }
+    [ -d "$MYDIR/charms/trusty/apache2" ] || bzr checkout --lightweight lp:charms/trusty/apache2 "$MYDIR/charms/trusty/apache2"
+    [ -d "$MYDIR/charms/trusty/haproxy" ] || bzr checkout --lightweight lp:charms/trusty/haproxy "$MYDIR/charms/trusty/haproxy"
 
     [ -d "$MYDIR/basenode" ] || { echo "Please check out basenode into $MYDIR"; exit 1; }
     for charmdir in $MYDIR/charms/trusty/*; do
@@ -63,8 +62,28 @@ extra_prodstack_configuration() {
         rm -rf "$charmdir/exec.d/basenode"
         mkdir -p "$charmdir/exec.d"
         cp -r "$MYDIR/basenode" "$charmdir/exec.d"
+        if ! grep "Invoking charm-pre-install-hooks" $charmdir/hooks/install; then
+            fn=$(mktemp)
+            awk "/^set/ {print \$0 RS \"juju-log 'Invoking charm-pre-install hooks'\" RS \"[ -d exec.d ] && ( for f in exec.d/*/charm-pre-install; do [ -x \$f ] && /bin/sh -c \$f; done )\";next}1" $charmdir/hooks/install > $fn
+            mv $fn $charmdir/hooks/install
+            chmod a+x $charmdir/hooks/install
+        fi
     done
+}
 
+upgrade() {
+    juju upgrade-charm --repository=charms/ apache2
+    wait_deployed apache2
+    juju upgrade-charm --repository=charms/ haproxy
+    wait_deployed haproxy
+    juju upgrade-charm --repository=charms/ appstream-frontend
+    wait_deployed appstream-frontend
+}
+
+extra_prodstack_configuration() {
+    if [ -z "${PRODSTACK}" ]; then
+        return
+    fi
     if ! juju status | grep -q ksplice:; then
         juju deploy --repository "$MYDIR/charms" local:trusty/ksplice
         juju set ksplice accesskey=$(cat /srv/mojo/LOCAL/mojo-${PROJECT}/canonical-is-ksplice.key)
@@ -130,8 +149,8 @@ if juju status appstream-frontend | grep -q 'agent-state:'; then
     echo 'WARNING: appstream-frontend already deployed, skipping'
     APPSTREAM_FRONTEND_ALREADY_DEPLOYED=1
 else
-    juju deploy --num-units=2 apache2
-    juju deploy haproxy
+    juju deploy --num-units=2 --repository "$MYDIR/charms" local:trusty/apache2
+    juju deploy --repository "$MYDIR/charms" local:trusty/haproxy
     wait_deployed apache2
     wait_deployed haproxy
     juju add-relation apache2:website haproxy:reverseproxy
@@ -155,6 +174,7 @@ if [ -n "${DEPLOYED_APPSTREAM_FRONTEND}" ]; then
 fi
 
 if [ -n "${APPSTREAM_FRONTEND_ALREADY_DEPLOYED}" ]; then
-    # XXX: could try to upgrade here?
+    checkout
+    upgrade
     extra_prodstack_configuration
 fi
