@@ -139,7 +139,7 @@ extra_prodstack_configuration() {
         rm -rf "$charmdir/exec.d/basenode"
         mkdir -p "$charmdir/exec.d"
         cp -r "$MYDIR/basenode" "$charmdir/exec.d"
-        if ! grep "Invoking charm-pre-install-hooks" $charmdir/hooks/install; then
+        if ! grep "charm-pre-install" $charmdir/hooks/install; then
             fn=$(mktemp)
             awk "/^set/ {print \$0 RS \"juju-log 'Invoking charm-pre-install hooks'\" RS \"[ -d exec.d ] && ( for f in exec.d/*/charm-pre-install; do [ -x \$f ] && /bin/sh -c \$f; done )\";next}1" $charmdir/hooks/install > $fn
             mv $fn $charmdir/hooks/install
