@@ -13,6 +13,8 @@ NOW=`date "+%d"`
 LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
+find ${logdir} -type f -not -newer ${LOGFILE} -not -name \*.gz -exec gzip -9 {} \;
+
 rsync -avzP --delete --delete-after @RSYNC_HOST@::www /srv/appstream-new
 rsync -avzP --delete --delete-after @RSYNC_HOST@::logs /srv/logs
 rsync -avzP --delete --delete-after /srv/appstream-new /srv/appstream
