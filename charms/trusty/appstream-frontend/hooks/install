@@ -6,9 +6,9 @@ juju-log "External host is '${EXTERNAL_HOSTNAME}'"
 
 apt-get -y install rsync
 
-mkdir -p /srv/appstream /srv/appstream-new /srv/logs
+mkdir -p /srv/appstream /srv/logs
 
-chown ubuntu:ubuntu /srv/appstream /srv/appstream-new /srv/logs
+chown ubuntu:ubuntu /srv/appstream /srv/logs
 
 cat <<EOF | su - ubuntu
 set -e

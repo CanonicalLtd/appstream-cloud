@@ -1,3 +1,12 @@
 #!/bin/sh
 
+if [ -d /srv/appstream-new ]; then
+    rm -rf /srv/appstream-new
+fi
+
+if [ ! -h /etc/apache2/mods-enabled/autoindex.load ]; then
+    a2enmod autoindex
+    service apache2 restart
+fi
+
 . ${CHARM_DIR}/hooks/install
