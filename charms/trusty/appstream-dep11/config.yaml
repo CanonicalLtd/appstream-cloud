@@ -14,6 +14,8 @@ options:
         default: amd64 arm64 armhf i386 powerpc ppc64el
     mirror:
         default: archive.ubuntu.com
+    git-host:
+        default: https://github.com/ximion/appstream-dep11.git
     http_proxy:
     https_proxy:
     no_proxy:

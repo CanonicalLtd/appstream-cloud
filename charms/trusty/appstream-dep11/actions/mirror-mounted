@@ -38,13 +38,15 @@ chown ubuntu:ubuntu /srv/data/mirror
 
 juju-log 'Cloning repository'
 
+giturl=$(config-get git-host)
+
 cat <<EOF | su - appstream
 set -e
 
 cd /srv/data/appstream
 
 if [ ! -d "appstream-dep11" ]; then
-    git clone https://github.com/ximion/appstream-dep11.git
+    git clone ${giturl}
 fi
 
 if [ ! -d "appstream" ]; then
