@@ -20,3 +20,5 @@ rsync -aqzP --delete --delete-after @RSYNC_HOST@::logs /srv/logs
 
 # finish logging
 exec > /dev/null 2>&1
+
+sed -i '/^$/d' ${LOGFILE}
