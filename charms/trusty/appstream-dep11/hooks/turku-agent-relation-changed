@@ -1,0 +1,13 @@
+#!/bin/sh
+
+TURKU_DIR=/etc/turku-agent/sources.d/
+
+juju-log "Installing turku sources"
+
+if [ ! -d "${TURKU_DIR}" ]; then
+    mkdir -p "${TURKU_DIR}"
+fi
+
+cp turku/sources.d/* "${TURKU_DIR}"
+
+turku-update-config

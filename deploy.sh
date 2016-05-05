@@ -115,6 +115,10 @@ subordinate_charms() {
         juju add-relation nrpe-external-master "$1"
     fi
 
+    if ! juju status "${1}" | grep -q turku-agent; then
+        juju add-relation turku-agent "$1"
+    fi
+
     wait_deployed "$1"
 }
 
@@ -128,6 +132,7 @@ extra_prodstack_configuration() {
     [ -d "$MYDIR/charms/trusty/landscape-client" ] || bzr checkout --lightweight lp:charms/trusty/landscape-client "$MYDIR/charms/trusty/landscape-client"
     [ -d "$MYDIR/charms/trusty/ksplice" ] || { echo "Please check out ksplice charm to $MYDIR/charms/trusty"; exit 1; }
     [ -d "$MYDIR/charms/trusty/nrpe-external-master" ] || { echo "Please check out nrpe-external-master charm to ${MYDIR}/charms/trusty"; exit 1; }
+    [ -d "$MYDIR/charms/trusty/turku-agent" ] || { echo "Please check out turku-agent charm to ${MYDIR}/charms/trusty"; exit 1; }
 
     [ -d "$MYDIR/basenode" ] || { echo "Please check out basenode into $MYDIR"; exit 1; }
     for charmdir in $MYDIR/charms/trusty/*; do
@@ -173,6 +178,15 @@ EOF
         juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
         # nagios wants to ping us
         nova secgroup-add-rule juju-${PROJECT} icmp -1 -1 0.0.0.0/0
+    fi
+    if ! juju status | grep -q turku-agent: && [ -e "${HOME}/turku.key" ]; then
+        cat <<EOF >> "${CONFIG_YAML}"
+turku-agent:
+        api_url: https://turku.admin.canonical.com/v1
+        api_auth: $(cat ${HOME}/turku.key)
+        environment_name: ${PROJECT}
+EOF
+        juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/turku-agent
     fi
 
     #
