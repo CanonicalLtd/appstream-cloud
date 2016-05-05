@@ -1,6 +1,5 @@
 #!/bin/sh
 
-IP=$(get_private_ip)
 NAGIOS_HOSTNAME="$(relation-get nagios_hostname)"
 NAGIOS_EXPORT_DIR="/var/lib/nagios/export"
 NAGIOS_NRPE_DIR="/etc/nagios/nrpe.d"
@@ -20,7 +19,7 @@ if [ ! -d "${NAGIOS_NRPE_DIR}" ]; then
 fi
 
 for file in nagios/export/*; do
-    sed -e "s/@NAGIOS_HOSTNAME@/${NAGIOS_HOSTNAME}/" ${file} > /var/lib/nagios/export/${file%.in}
+    sed -e "s/@NAGIOS_HOSTNAME@/${NAGIOS_HOSTNAME}/" ${file} > /var/lib/${file%.in}
 done
 
 cp nagios/nrpe.d/* /etc/nagios/nrpe.d/
