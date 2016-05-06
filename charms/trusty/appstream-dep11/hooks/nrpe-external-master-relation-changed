@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 NAGIOS_HOSTNAME="$(relation-get nagios_hostname)"
 NAGIOS_EXPORT_DIR="/var/lib/nagios/export"
 NAGIOS_NRPE_DIR="/etc/nagios/nrpe.d"
@@ -18,8 +20,10 @@ if [ ! -d "${NAGIOS_NRPE_DIR}" ]; then
     mkdir -p "${NAGIOS_NRPE_DIR}"
 fi
 
-for file in nagios/export/*; do
+for file in nagios/export/*.in; do
     sed -e "s/@NAGIOS_HOSTNAME@/${NAGIOS_HOSTNAME}/" ${file} > /var/lib/${file%.in}
 done
+
+cp nagios/export/*.cfg /var/lib/nagios/export/
 
 cp nagios/nrpe.d/* /etc/nagios/nrpe.d/
