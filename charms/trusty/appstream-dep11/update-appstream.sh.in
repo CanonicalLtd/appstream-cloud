@@ -70,6 +70,8 @@ for release in ${RELEASES}; do
     dep11-generator update-reports . ${release}
 done
 
+find ${logdir} -type f -name \*.log ! -newermt '15 days ago' -print0 | xargs -0r gzip -9
+
 rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
 
