@@ -26,6 +26,6 @@ done
 
 rm -f /etc/nagios/nrpe.d/check_disk_root.cfg
 
-cp nagios/export/*.cfg /var/lib/nagios/export/
+cp -f nagios/export/*.cfg /var/lib/nagios/export/
 
-cp nagios/nrpe.d/* /etc/nagios/nrpe.d/
+cp -f nagios/nrpe.d/* /etc/nagios/nrpe.d/

@@ -86,3 +86,5 @@ if grep -qs /srv/data /proc/mounts && [ ! -e /home/ubuntu/lock ]; then
     flock -xn /home/ubuntu/lock /home/ubuntu/update-appstream.sh
 fi
 EOF
+
+cp -f "${CHARM_DIR}/check-public-mtimes" /srv/data/appstream/
