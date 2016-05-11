@@ -24,6 +24,8 @@ for file in nagios/export/*.in; do
     sed -e "s/@NAGIOS_HOSTNAME@/${NAGIOS_HOSTNAME}/" ${file} > /var/lib/${file%.in}
 done
 
+rm -f /etc/nagios/nrpe.d/check_disk_root.cfg
+
 cp nagios/export/*.cfg /var/lib/nagios/export/
 
 cp nagios/nrpe.d/* /etc/nagios/nrpe.d/
