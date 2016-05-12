@@ -4,5 +4,4 @@ define service {
     service_description Disk space on /srv/data
     check_command       check_nrpe!check_disk_data
     servicegroups       appstream-back-prompt-critical
-    contact_groups      prod-ue-appstream-back-pagerduty-contactgroup
 }

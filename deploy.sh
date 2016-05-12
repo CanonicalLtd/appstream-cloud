@@ -215,9 +215,6 @@ if juju status appstream-dep11 | grep -q 'agent-state:'; then
     APPSTREAM_ALREADY_DEPLOYED=1
 else
     trap "rm ${CONFIG_YAML}" EXIT INT QUIT PIPE
-    if [ -e "${HOME}/pagerduty.key" ]; then
-            PAGERDUTY=$(cat "${HOME}/pagerduty.key")
-    fi
     # temporarily set arches to amd64 only
     cat << EOF >> "${CONFIG_YAML}"
 appstream-dep11:
@@ -227,7 +224,6 @@ appstream-dep11:
     http_proxy: ${http_proxy:-}
     https_proxy: ${https_proxy:-}
     no_proxy: ${no_proxy:-}
-    pagerduty-key: ${PAGERDUTY:-}
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" --constraints "cpu-cores=8 mem=8G" local:trusty/appstream-dep11
     wait_deployed appstream-dep11
