@@ -29,3 +29,21 @@ rm -f /etc/nagios/nrpe.d/check_disk_root.cfg
 cp -f nagios/export/*.cfg /var/lib/nagios/export/
 
 cp -f nagios/nrpe.d/* /etc/nagios/nrpe.d/
+
+if [ -e "/root/pagerduty.key" ]; then
+        PAGERDUTY=$(cat /root/pagerduty.key)
+        cat <<EOF > /var/lib/nagios/export/prod-ue-appstream-back-pagerduty
+define contact {
+       contact_name                             prod-ue-appstream-back-pagerduty
+       contactgroups                            prod-ue-appstream-back-pagerduty-contactgroup
+       alias                                    PagerDuty Contact for UE Appstream
+       service_notification_period              24x7
+       host_notification_period                 24x7
+       service_notification_options             w,u,c,r
+       host_notification_options                d,r
+       service_notification_commands            notify-service-by-pagerduty-verbose
+       host_notification_commands               notify-host-by-pagerduty-verbose
+       pager                                    ${PAGERDUTY}
+}
+EOF
+fi

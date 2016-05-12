@@ -20,6 +20,7 @@ RELEASES=$(config-get releases)
 COMPONENTS="main universe multiverse restricted"
 ARCHES=$(config-get arches)
 MIRROR=$(config-get mirror)
+PAGERDUTY=$(config-get pagerduty-key)
 
 juju-log "Got releases ${RELEASES} and arches ${ARCHES} and mirror ${MIRROR}"
 
@@ -86,5 +87,10 @@ if grep -qs /srv/data /proc/mounts && [ ! -e /home/ubuntu/lock ]; then
     flock -xn /home/ubuntu/lock /home/ubuntu/update-appstream.sh
 fi
 EOF
+
+if [ -n "${PAGERDUTY}" ]; then
+        echo "${PAGERDUTY}" > /root/pagerduty.key
+        chmod 0600 /root/pagerduty.key
+fi
 
 cp -f "${CHARM_DIR}/check-public-mtimes" /srv/data/appstream/
