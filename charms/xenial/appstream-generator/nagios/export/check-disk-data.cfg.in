@@ -1,0 +1,7 @@
+define service {
+    use                 active-service
+    host_name           @NAGIOS_HOSTNAME@
+    service_description Disk space on /srv
+    check_command       check_nrpe!check_disk_data
+    servicegroups       appstream-prompt-critical
+}

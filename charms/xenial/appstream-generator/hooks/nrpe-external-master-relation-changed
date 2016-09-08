@@ -1,0 +1,25 @@
+#!/bin/sh
+
+NAGIOS_HOSTNAME="$(relation-get nagios_hostname)"
+NAGIOS_EXPORT_DIR="/var/lib/nagios/export"
+NAGIOS_NRPE_DIR="/etc/nagios/nrpe.d"
+
+juju-log "Installing nagios checks for ${NAGIOS_HOSTNAME}"
+
+if [ ! -d "/usr/lib/nagios/plugins" ] || [ ! -d "/etc/nagios/nrpe.d" ]; then
+    exit 0
+fi
+
+if [ ! -d "${NAGIOS_EXPORT_DIR}" ]; then
+    mkdir -p "${NAGIOS_EXPORT_DIR}"
+fi
+
+if [ ! -d "${NAGIOS_NRPE_DIR}" ]; then
+    mkdir -p "${NAGIOS_NRPE_DIR}"
+fi
+
+for file in nagios/export/*; do
+    sed -e "s/@NAGIOS_HOSTNAME@/${NAGIOS_HOSTNAME}/" ${file} > /var/lib/${file%.in}
+done
+
+cp nagios/nrpe.d/* /etc/nagios/nrpe.d/

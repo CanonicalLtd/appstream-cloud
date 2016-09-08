@@ -2,8 +2,8 @@
 
 EXTERNAL_HOSTNAME=$(config-get external-hostname)
 
-juju relation-set domain=${EXTERNAL_HOSTNAME}
-juju relation-set site_config=$(sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in)
-juju relation-set site_modules="autoindex"
-juju relation-set ports=80
-juju relation-set enabled=true
+relation-set domain=${EXTERNAL_HOSTNAME}
+relation-set site_config="$(sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in)"
+relation-set site_modules="autoindex"
+relation-set ports=80
+relation-set enabled=true

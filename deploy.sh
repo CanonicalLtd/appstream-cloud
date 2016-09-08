@@ -1,65 +1,7 @@
 #!/bin/bash
 
 MYDIR=$(dirname "$(readlink -f $0)")
-PROJECT=prod-ue-appstream-back
-
-VOLUMENAME=mirror
-VOLUMESIZE=750 # GB
-
-get_volume_field() {
-    name=$1
-    field=$2
-    shift 2
-
-    output=$(nova volume-show "${name}" 2>/dev/null | awk "BEGIN {FS=\"|\"} / ${field} / {gsub(\" \",\"\"); print \$3}")
-
-    if [ $? -eq 0 ]; then
-        echo "${output}"
-    fi
-}
-
-find_or_create_volume() {
-    name=$1
-    size=$2
-    shift 2
-
-    display_name=$(get_volume_field "${name}" "display_name")
-
-    if [ -z "${display_name}" ]; then
-        nova volume-create --display-name "${name}" "${size}" >/dev/null 2>/dev/null
-        timeout=60
-        while (( timeout > 0 )); do
-            status=$(get_volume_field "${name}" "status")
-            case "${status}" in
-                creating)
-                    (( timeout -= 5 ))
-                    ;;
-                available)
-                    echo $(get_volume_field "${name}" "id")
-                    return
-                    ;;
-                *)
-                    echo "ERROR: Creating volume \"${display_name}\" failed with status \"${status}\"" >&2
-                    exit 1
-                    ;;
-            esac
-        done
-        echo "ERROR: Creating volume \"${display_name}\" timed out" >&2
-        exit 1
-    else
-        status=$(get_volume_field "${name}" "status")
-        case "${status}" in
-            # We only like 'available' volumes, can't do much with errored or in-use ones
-            available)
-                echo $(get_volume_field "${name}" "id")
-                ;;
-            *)
-                echo "ERROR: Volume \"${display_name}\" already exists and has status \"${status}\"" >&2
-                exit 1
-                ;;
-        esac
-    fi
-}
+PROJECT=$(id -un)
 
 wait_deployed() {
     echo "waiting for $1 to get deployed..."
@@ -73,50 +15,28 @@ wait_deployed() {
     done
 }
 
-wait_attached() {
-    volume=$1
-    shift
-
-    echo -n "waiting for ${volume} to be attached..."
-
-    timeout=60
-    while (( timeout > 0 )); do
-        status=$(get_volume_field "${volume}" "status")
-        case "${status}" in
-            in-use)
-                echo "done"
-                return
-                ;;
-            *)
-                (( timeout -= 5 ))
-                ;;
-        esac
-    done
-
-    echo "\nERROR: Attaching volume \"${volume}\" timed out" >&2
-    exit 1
-}
-
 subordinate_charms() {
     if ! juju status | grep -q "${1}"; then
         return
     fi
 
-    echo "deploying subordinate charms to $1"
+    SERIES=$(juju status "${1}" | grep series | cut -d: -f 2)
+
+    echo "deploying subordinate charms to $1 (series: ${SERIES})"
     if ! juju status "${1}" | grep -q ksplice; then
-        juju add-relation ksplice "$1"
+        juju add-relation ${SERIES}-ksplice "$1"
     fi
 
     if ! juju status "${1}" | grep -q landscape; then
-        juju add-relation landscape-client "$1"
+        juju add-relation ${SERIES}-landscape-client "$1"
     fi
 
     if ! juju status "${1}" | grep -q nrpe-external-master; then
-        juju add-relation nrpe-external-master "$1"
+        juju add-relation ${SERIES}-nrpe-external-master "$1"
     fi
 
     if ! juju status "${1}" | grep -q turku-agent; then
-        juju add-relation turku-agent "$1"
+        juju add-relation ${SERIES}-turku-agent "$1"
     fi
 
     wait_deployed "$1"
@@ -134,8 +54,17 @@ extra_prodstack_configuration() {
     [ -d "$MYDIR/charms/trusty/nrpe-external-master" ] || { echo "Please check out nrpe-external-master charm to ${MYDIR}/charms/trusty"; exit 1; }
     [ -d "$MYDIR/charms/trusty/turku-agent" ] || { echo "Please check out turku-agent charm to ${MYDIR}/charms/trusty"; exit 1; }
 
+    for charm in landscape-client ksplice nrpe-external-master turku-agent; do
+            FROM=${MYDIR}/charms/xenial/${charm}
+            TO=${MYDIR}/charms/trusty/${charm}
+            if [ ! -d "${MYDIR}/charms/xenial/${charm}" ]; then
+                    echo "Creating symlink ${FROM} -> ${TO}"
+                    ln -s "${TO}" "${FROM}"
+            fi
+    done
+
     [ -d "$MYDIR/basenode" ] || { echo "Please check out basenode into $MYDIR"; exit 1; }
-    for charmdir in $MYDIR/charms/trusty/*; do
+    for charmdir in $MYDIR/charms/trusty/* $MYDIR/charms/xenial/*; do
         # ignore subordinate charms
         if grep -q 'subordinate:.*true' $charmdir/metadata.yaml; then
             continue
@@ -152,54 +81,56 @@ extra_prodstack_configuration() {
         fi
     done
 
-    if ! juju status | grep -q ksplice:; then
-        juju deploy --repository "$MYDIR/charms" local:trusty/ksplice
-        juju set ksplice accesskey=$(cat /srv/mojo/LOCAL/mojo-${PROJECT}/canonical-is-ksplice.key)
-        juju set ksplice source=""
-    fi
-    if ! juju status | grep -q landscape-client:; then
-        cat <<EOF >> "$CONFIG_YAML"
-landscape-client:
+    for series in trusty xenial; do
+        if ! juju status | grep -q ${series}-ksplice:; then
+            juju deploy --repository "$MYDIR/charms" local:${series}/ksplice ${series}-ksplice
+            juju set ${series}-ksplice accesskey=$(cat /srv/mojo/LOCAL/mojo-${PROJECT}/canonical-is-ksplice.key)
+            juju set ${series}-ksplice source="http://www.ksplice.com/apt ${series} ksplice"
+        fi
+        if ! juju status | grep -q ${series}-landscape-client:; then
+            cat <<EOF >> "$CONFIG_YAML"
+${series}-landscape-client:
   url: https://landscape.is.canonical.com/message-system
   ping-url: http://landscape.is.canonical.com/ping
   account-name: standalone
   registration-key: $(cat /srv/mojo/LOCAL/mojo-${PROJECT}/canonical-is-landscape.key)
   tags: juju-managed, devops-instance, devops-production
 EOF
-        juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:trusty/landscape-client
-    fi
+            juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:${series}/landscape-client ${series}-landscape-client
+        fi
 
-    if ! juju status | grep -q nrpe-external-master:; then
-        cat <<EOF >> "${CONFIG_YAML}"
-nrpe-external-master:
+        if ! juju status | grep -q ${series}-nrpe-external-master:; then
+            cat <<EOF >> "${CONFIG_YAML}"
+${series}-nrpe-external-master:
   nagios_master: wendigo.canonical.com
   nagios_host_context: ${PROJECT}
 EOF
-        juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/nrpe-external-master
-        # nagios wants to ping us
-        nova secgroup-add-rule juju-${PROJECT} icmp -1 -1 0.0.0.0/0
-    fi
-    if ! juju status | grep -q turku-agent: && [ -e "${HOME}/turku.key" ]; then
-        cat <<EOF >> "${CONFIG_YAML}"
-turku-agent:
+            juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:${series}/nrpe-external-master ${series}-nrpe-external-master
+            # nagios wants to ping us (|| true because the rule might be added already; could robustify that)
+            nova secgroup-add-rule juju-${PROJECT} icmp -1 -1 0.0.0.0/0 || true
+        fi
+        if ! juju status | grep -q ${series}-turku-agent: && [ -e "${HOME}/turku.key" ]; then
+            cat <<EOF >> "${CONFIG_YAML}"
+${series}-turku-agent:
         api_url: https://turku.admin.canonical.com/v1
         api_auth: $(cat ${HOME}/turku.key)
         environment_name: ${PROJECT}
 EOF
-        juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/turku-agent
-    fi
+            juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:${series}/turku-agent ${series}-turku-agent
+        fi
+    done
 
     #
     # deploy bootstrap-node charm
     #
 
     if ! juju status | grep -q bootstrap-node:; then
-        juju deploy --repository "${MYDIR}/charms" --to 0 local:trusty/bootstrap-node
+        juju deploy --repository "${MYDIR}/charms" --to 0 local:xenial/bootstrap-node
         wait_deployed "bootstrap-node"
     fi
     subordinate_charms "bootstrap-node"
 
-    subordinate_charms "appstream-dep11"
+    subordinate_charms "appstream-generator"
 }
 
 if [ -z "$OS_PASSWORD" ]; then
@@ -210,42 +141,24 @@ fi
 CONFIG_YAML=$(mktemp)
 trap "rm ${CONFIG_YAML}" EXIT INT QUIT HUP PIPE TERM
 
-if juju status appstream-dep11 | grep -q 'agent-state:'; then
-    echo 'WARNING: appstream-dep11 already deployed, skipping'
+if juju status appstream-generator | grep -q 'agent-state:'; then
+    echo 'WARNING: appstream-generator already deployed, skipping'
     APPSTREAM_ALREADY_DEPLOYED=1
 else
     trap "rm ${CONFIG_YAML}" EXIT INT QUIT PIPE
     # temporarily set arches to amd64 only
     cat << EOF >> "${CONFIG_YAML}"
-appstream-dep11:
+appstream-generator:
     hostname: ${HOSTNAME:-}
-    arches: ${ARCHES:-amd64}
-    mirror: ${MIRROR:-archive.ubuntu.com}
-    http_proxy: ${http_proxy:-}
-    https_proxy: ${https_proxy:-}
-    no_proxy: ${no_proxy:-}
+    mirror: ${MIRROR:-}
 EOF
-    juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" --constraints "cpu-cores=8 mem=8G" local:trusty/appstream-dep11
-    wait_deployed appstream-dep11
+    juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" --constraints "cpu-cores=8 mem=16G root-disk=50G" local:xenial/appstream-generator
+    wait_deployed appstream-generator
     DEPLOYED_APPSTREAM=1
 fi
 
 if [ -n "${DEPLOYED_APPSTREAM}" ]; then
-    id=$(find_or_create_volume "${VOLUMENAME}" "${VOLUMESIZE}")
-    env="$(echo "$juju_status" | awk '/^environment:/ { print $2 }')"
-    machine_no="$(echo "$juju_status" | grep machine: | grep -o '[0-9]\+')"
-    machine=juju-${env}-machine-${machine_no}
-    device=$(nova volume-attach "${machine}" "${id}" auto 2>/dev/null | awk "BEGIN {FS=\"|\"} / device / {gsub(\" \",\"\"); print \$3}")
-    echo "Device: ${device}"
-    wait_attached "${id}"
-    # this is a json array containing amongst other things a 'device' -> /dev/device mapping
-    json=$(get_volume_field "${id}" "attachments")
-    # run the action on all the units so that they mount the volume
-    units=$(juju status | python3 -c "import sys, yaml; print (' '.join(yaml.load(sys.stdin)['services']['appstream-dep11']['units'].keys()))")
-    for unit in ${units}; do
-        juju action do ${unit} mirror-mounted device=${device}
-    done
-    juju expose appstream-dep11
+    juju expose appstream-generator
     extra_prodstack_configuration
     echo "Done. Now deploy the frontend."
 fi

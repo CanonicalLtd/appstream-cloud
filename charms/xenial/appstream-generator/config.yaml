@@ -1,0 +1,23 @@
+options:
+    ip:
+        default: 127.0.0.1
+        description: The public external IP of the appstream service
+        type: string
+    hostname:
+        description: The hostname the service will be presented on
+        type: string
+    releases:
+        default: yakkety
+        description: The releases to act on (space separated)
+        type: string
+    arches:
+        default: amd64 arm64 armhf i386 powerpc ppc64el s390x
+    mirror:
+        default: archive.ubuntu.com
+    git-host:
+        default: https://github.com/ximion/appstream-generator.git
+    git-branch:
+        default: master
+    http_proxy:
+    https_proxy:
+    no_proxy:

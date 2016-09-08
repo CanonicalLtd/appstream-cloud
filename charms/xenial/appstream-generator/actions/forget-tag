@@ -1,0 +1,19 @@
+#!/bin/sh
+
+BASE_DIR=/srv/appstream
+FORGET_FILE=${BASE_DIR}/forget
+
+if [ -e "${FORGET_FILE}" ]; then
+    . ${FORGET_FILE}
+fi
+
+TAG_TO_FORGET=$(action-get tag)
+
+juju-log "Forgetting all packages with ${TAG_TO_FORGET}"
+
+PKGS=$(${CHARM_DIR}/forget $(echo ${TAG_TO_FORGET} | tr '\n' ' '))
+
+juju-log "Forgetting ${PKGS}"
+
+echo "CLEAN_PKGS=\"${CLEAN_PKGS:+${CLEAN_PKGS} }${PKGS}\"" >> ${FORGET_FILE}
+chown ubuntu:ubuntu ${FORGET_FILE}

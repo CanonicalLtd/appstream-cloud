@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+# Run the install hook - this will install any new deps etc
+. ${CHARM_DIR}/hooks/install

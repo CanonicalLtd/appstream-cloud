@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -e
+
+INPUT_FILENAME=${CHARM_DIR}/asgen-config.json.in
+OUTPUT_FILENAME=/srv/appstream/appstream-workdir/asgen-config.json
+
+juju-log 'Running config-changed hook'
+
+HOSTNAME=$(config-get hostname)
+
+if [ -n "${HOSTNAME}" ]; then
+    juju-log "Got hostname ${HOSTNAME}"
+fi
+
+RELEASES=$(config-get releases)
+COMPONENTS="main universe multiverse restricted"
+ARCHES=$(config-get arches)
+MIRROR=$(config-get mirror)
+
+juju-log "Got releases ${RELEASES} and arches ${ARCHES} and mirror ${MIRROR}"
+
+function make_json_array {
+        echo -n "["
+        local out=$(printf ", \"%s\"" $*)
+        # remove trailing comma
+        echo -n ${out:2}
+        echo "]"
+}
+
+C=$(make_json_array ${COMPONENTS})
+A=$(make_json_array ${ARCHES})
+
+SUITES=()
+
+for r in ${RELEASES}; do
+    for release in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
+        priority=0
+        if [ ${release#${r}-} = "updates" ]; then
+                priority=10
+        fi
+        if [ ${release#${r}-} = "security" ]; then
+                priority=20
+        fi
+        if [ ${release#${r}-} = "proposed" ]; then
+                priority=30
+        fi
+        if [ ${release#${r}-} = "backports" ]; then
+                priority=40
+        fi
+        IFS=$'\n' SUITES+=("
+  \\\"${release}\\\":
+    {
+      \\\"useIconTheme\\\": \\\"Humanity\\\",
+      \\\"baseSuite\\\": \\\"${r}\\\",
+      \\\"dataPriority\\\": ${priority},
+      \\\"sections\\\": ${C},
+      \\\"architectures\\\": ${A}
+    },")
+    done
+done
+
+# remove last character (trailing comma, thanks a bunch json)
+SUITES[-1]=${SUITES[-1]%?}
+
+IFS=$'\n' sed -e "s@#HOSTNAME#@${HOSTNAME:-$(hostname -f)}@; s@#MIRROR#@${MIRROR}@" ${INPUT_FILENAME} > ${OUTPUT_FILENAME}
+
+printf "${SUITES[*]}" >> ${OUTPUT_FILENAME}
+echo "
+    }
+}" >> ${OUTPUT_FILENAME}
+
+juju-log 'Adding proxy settings'
+
+for var in http_proxy https_proxy no_proxy; do
+    sed -i "/^${var}/d" /etc/environment
+    v=$(config-get ${var})
+    if [ -n "${v}" ]; then
+        juju-log "Setting ${var}=${v}"
+        echo "${var}=${v}" >> /etc/environment
+    fi
+done
+
+
+cat <<EOF | su - ubuntu
+set -e
+
+sed -e 's/#RELEASES#/${RELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+
+chmod a+x ~/update-appstream.sh
+
+if ! crontab -l | grep -qs update-appstream; then
+    echo "0 * * * * flock -xn ~/lock ~/update-appstream.sh" | crontab -
+fi
+EOF
+

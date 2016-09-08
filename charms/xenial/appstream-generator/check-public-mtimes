@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+
+#!/usr/bin/python3
+
+import os
+import os.path
+import sys
+import time
+from datetime import timedelta
+
+DIR=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'appstream-public', 'html')
+
+MAX_AGE=timedelta(days=1)
+
+RET = 0
+status = {}
+
+for subdir in os.listdir(DIR):
+        index = os.path.join(DIR, subdir, 'index.html')
+        if os.path.exists(index):
+                mtime = os.path.getmtime(index)
+                now = time.time()
+
+                delta = timedelta(seconds=(now - mtime))
+
+                if delta >= MAX_AGE:
+                        RET = 2
+
+                status[subdir] = (delta < MAX_AGE, str(delta))
+
+print("Freshness %s|" % ("OK" if RET == 0 else "NOT OK"))
+
+for k in status:
+        (ok, delta) = status[k]
+        print("%s => %s %s" % (k, "OK" if ok else "NOT OK", delta))
+
+sys.exit(RET)

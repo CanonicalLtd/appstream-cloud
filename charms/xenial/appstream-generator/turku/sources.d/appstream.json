@@ -1,0 +1,7 @@
+{
+        "appstream-public": {
+                "path": "/srv/appstream/appstream-public",
+                "comment": "Production appstream data",
+                "retention": "last 14 days, earliest of 1 month, earliest of 2 months, earliest of 3 months"
+        }
+}

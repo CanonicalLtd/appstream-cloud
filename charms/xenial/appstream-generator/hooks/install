@@ -1,0 +1,118 @@
+#!/bin/bash
+
+set -ex
+
+juju-log 'Invoking charm-pre-install hooks'
+[ -d exec.d ] && ( for f in exec.d/*/charm-pre-install; do [ -x $f ] && /bin/sh -c "$f"; done )
+
+juju-log 'Installing appstream-generator dependencies'
+
+add-apt-repository -y ppa:laney/appstream
+
+apt update
+
+apt-get -y install libappstream-dev \
+                   libcairo2-dev \
+                   libcurl4-gnutls-dev \
+                   libgdk-pixbuf2.0-dev \
+                   libglib2.0-dev \
+                   liblmdb-dev \
+                   libmustache-d-dev \
+                   librsvg2-dev
+
+apt-get -y install libjs-highlight.js \
+                   libjs-jquery \
+                   libjs-jquery-flot
+
+apt-get -t xenial-backports -y install libarchive-dev
+
+juju-log 'Installing utilities'
+
+apt-get -y install git dub xz-utils
+
+juju-log 'Installing rsyncd'
+
+apt-get -y install rsync
+
+juju-log 'Installing jq (for forget action)'
+
+apt-get -y install jq
+
+juju-log 'Installing config files'
+
+mkdir -p /etc/rsync-juju.d/
+cat <<EOF > /etc/rsync-juju.d/appstream.conf
+[appstream]
+    path = /srv/appstream/appstream-public/data
+    read only = yes
+    list = yes
+    uid = appstream
+    gid = appstream
+EOF
+
+cat <<EOF > /etc/rsync-juju.d/www.conf
+[www]
+    path = /srv/appstream/appstream-public
+    read only = yes
+    list = yes
+    uid = ubuntu
+    gid = ubuntu
+EOF
+
+cat <<EOF > /etc/rsync-juju.d/logs.conf
+[logs]
+    path = /srv/appstream/logs
+    read only = yes
+    list = yes
+    uid = ubuntu
+    gid = ubuntu
+EOF
+
+if ! getent passwd appstream > /dev/null; then
+    addgroup --gid 11111 appstream >/dev/null 2>&1
+    adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
+fi
+
+service rsync restart
+open-port 873
+
+mkdir -p /srv/appstream
+chown appstream:appstream /srv/appstream
+
+juju-log 'Initial repository clone and build'
+
+giturl=$(config-get git-host)
+branch=$(config-get git-branch)
+
+cat <<EOF | su - appstream
+set -e
+
+cd /srv/appstream
+
+if [ ! -d "appstream-generator" ]; then
+    git clone --recursive "${giturl}" -b "${branch}" appstream-generator
+    cd appstream-generator
+    mkdir /tmp/dub-repo
+    mkdir /tmp/fakehome
+    cp -dr /usr/include/d/mustache-d /tmp/dub-repo
+    HOME=/tmp/fakehome dub add-local /tmp/dub-repo/mustache-d 0.1.1
+    HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel
+fi
+EOF
+
+chown ubuntu:ubuntu /srv/appstream
+
+cat <<EOF | su - ubuntu
+cd /srv/appstream
+
+mkdir -p appstream-public appstream-workdir/export logs
+if [ ! -e appstream-workdir/export/logs ]; then
+    ln -sf ../logs appstream-workdir/export/logs
+fi
+
+if [ ! -e appstream-public/logs ]; then
+    ln -sf ../logs appstream-public/logs
+fi
+EOF
+
+ln -sf "${CHARM_DIR}/check-public-mtimes" /srv/appstream/check-public-mtimes

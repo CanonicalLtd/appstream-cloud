@@ -1,0 +1,9 @@
+name: appstream-generator
+maintainer: Iain Lane <iain.lane@canonical.com>
+summary: DEP-11 metadata generator (use this one)
+description: |
+    This is the maintained rewrite of the old appstream-dep11 generator.
+provides:
+    nrpe-external-master:
+        interface: nrpe-external-master
+        scope: container

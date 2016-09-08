@@ -7,7 +7,7 @@
 # - Iain Lane 2016-03-10
 
 MYDIR=$(dirname "$(readlink -f $0)")
-PROJECT=prod-ue-appstream
+PROJECT=$(id -un)
 
 wait_deployed() {
     echo "waiting for $1 to get deployed..."
@@ -117,6 +117,10 @@ EOF
     #
 
     if ! juju status | grep -q bootstrap-node:; then
+        if [ "$(juju get-environment default-series)" != "trusty" ]; then
+                echo "default-series must be trusty; run juju set-environment default-series=trusty and re-bootstrap"
+                exit 1
+        fi
         juju deploy --repository "${MYDIR}/charms" --to 0 local:trusty/bootstrap-node
         wait_deployed "bootstrap-node"
     fi
@@ -149,13 +153,31 @@ if juju status appstream-frontend | grep -q 'agent-state:'; then
     echo 'WARNING: appstream-frontend already deployed, skipping'
     APPSTREAM_FRONTEND_ALREADY_DEPLOYED=1
 else
-    juju deploy --num-units=2 --repository "$MYDIR/charms" local:trusty/apache2
-    juju deploy --repository "$MYDIR/charms" local:trusty/haproxy
+    if ! juju status | grep -q apache2:; then
+        # autoindex is here by default - we want that, so have to override the setting
+        cat <<EOF >> "${CONFIG_YAML}"
+apache2:
+  disable_modules: status
+EOF
+      juju deploy --num-units=2 --repository "$MYDIR/charms" local:trusty/apache2
+      DEPLOYED_APACHE=1
+    fi
+
+    if ! juju status | grep -q haproxy:; then
+      juju deploy --repository "$MYDIR/charms" local:trusty/haproxy
+      DEPLOYED_HAPROXY=1
+    fi
+
     wait_deployed apache2
     wait_deployed haproxy
-    juju add-relation apache2:website haproxy:reverseproxy
+
+    if [ -n "${DEPLOYED_APACHE}${DEPLOYED_HAPROXY}" ]; then
+      juju add-relation apache2:website haproxy:reverseproxy
+    fi
+
     juju deploy --repository "${MYDIR}/charms" --config=config.yaml local:trusty/appstream-frontend
     juju add-relation appstream-frontend apache2
+
     wait_deployed apache2
     DEPLOYED_APPSTREAM_FRONTEND=1
 fi
