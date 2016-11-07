@@ -9,9 +9,5 @@ if [ -z "$mount" ] ; then
         exit 0
 fi
 
-if [ ! -e "${mount}/itworked" ]; then
-        echo "hooray" > "${mount}/itworked"
-fi
-
 ${CHARM_DIR}/initial-setup
 ${CHARM_DIR}/hooks/config-changed
