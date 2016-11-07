@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+mount=$(relation-get mountpoint)
+
+if [ -z "$mount" ] ; then
+        juju-log "wait for related service to start"
+        exit 0
+fi
+
+if [ ! -e "${mount}/itworked" ]; then
+        echo "hooray" > "${mount}/itworked"
+fi
+
+${CHARM_DIR}/initial-setup
+${CHARM_DIR}/hooks/config-changed

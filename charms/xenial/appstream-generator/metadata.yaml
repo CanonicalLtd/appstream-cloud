@@ -7,3 +7,7 @@ provides:
     nrpe-external-master:
         interface: nrpe-external-master
         scope: container
+    data:
+        interface: block-storage
+        scope: container
+        optional: true

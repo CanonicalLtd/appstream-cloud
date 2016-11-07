@@ -63,6 +63,8 @@ extra_prodstack_configuration() {
             fi
     done
 
+    [ -d "$MYDIR/charms/xenial/storage" ] || { echo "Please check out storage charm to ${MYDIR}/charms/xenial"; exit 1; }
+
     [ -d "$MYDIR/basenode" ] || { echo "Please check out basenode into $MYDIR"; exit 1; }
     for charmdir in $MYDIR/charms/trusty/* $MYDIR/charms/xenial/*; do
         # ignore subordinate charms
@@ -128,9 +130,18 @@ EOF
         juju deploy --repository "${MYDIR}/charms" --to 0 local:xenial/bootstrap-node
         wait_deployed "bootstrap-node"
     fi
+
+    if ! juju status | grep -q block-storage-broker:; then
+            $MYDIR/generate-block-storage-broker-yaml.sh >> "${CONFIG_YAML}"
+            juju-deploy --config "${CONFIG_YAML}" block-storage-broker
+            wait_deployed "block-storage-broker"
+    fi
+
     subordinate_charms "bootstrap-node"
 
     subordinate_charms "appstream-generator"
+
+    subordinate_charms "block-storage-broker"
 }
 
 if [ -z "$OS_PASSWORD" ]; then
@@ -153,6 +164,17 @@ appstream-generator:
     mirror: ${MIRROR:-}
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" --constraints "cpu-cores=8 mem=16G root-disk=50G" local:xenial/appstream-generator
+    wait_deployed appstream-generator
+cat <<EOF >> "${CONFIG_YAML}"
+storage:
+        provider: block-storage-broker
+        volume_size: 20
+        volume_label: ${PROJECT}-data
+EOF
+    juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:xenial/storage
+    juju add-relation storage block-storage-broker
+    wait_deployed block-storage-broker
+    juju add-relation storage appstream-generator
     wait_deployed appstream-generator
     DEPLOYED_APPSTREAM=1
 fi

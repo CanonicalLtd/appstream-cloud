@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+MOUNTPOINT="/srv/appstream"
+
+if [ ! -d "${MOUNTPOINT}" ]; then
+        mkdir -p "${MOUNTPOINT}"
+fi
+
+relation-set "mountpoint=${MOUNTPOINT}"

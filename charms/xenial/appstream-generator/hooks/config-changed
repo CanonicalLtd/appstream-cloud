@@ -5,6 +5,11 @@ set -e
 INPUT_FILENAME=${CHARM_DIR}/asgen-config.json.in
 OUTPUT_FILENAME=/srv/appstream/appstream-workdir/asgen-config.json
 
+if ! grep -qs /srv/appstream /proc/mounts; then
+        juju-log 'Deferring config-changed; /srv/appstream is not mounted'
+        exit 0
+fi
+
 juju-log 'Running config-changed hook'
 
 HOSTNAME=$(config-get hostname)
