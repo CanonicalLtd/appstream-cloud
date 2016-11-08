@@ -28,7 +28,7 @@ apt-get -t xenial-backports -y install libarchive-dev
 
 juju-log 'Installing utilities'
 
-apt-get -y install git dub xz-utils
+apt-get -y install git dub xz-utils ldc
 
 juju-log 'Installing rsyncd'
 

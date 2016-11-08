@@ -23,7 +23,7 @@ mkdir /tmp/dub-repo
 mkdir /tmp/fakehome
 cp -dr /usr/include/d/mustache-d /tmp/dub-repo
 HOME=/tmp/fakehome dub add-local /tmp/dub-repo/mustache-d 0.1.1
-HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel
+HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel --compiler=ldc2
 EOF
 
     cd ${BUILD_DIR}
