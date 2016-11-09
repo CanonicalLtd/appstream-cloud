@@ -7,7 +7,11 @@ options:
         description: The hostname the service will be presented on
         type: string
     releases:
-        default: yakkety
+        default: zesty
+        description: The releases to act on (space separated)
+        type: string
+    partialreleases:
+        default: xenial yakkety
         description: The releases to act on (space separated)
         type: string
     arches:

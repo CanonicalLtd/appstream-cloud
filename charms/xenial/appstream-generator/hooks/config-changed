@@ -18,6 +18,7 @@ if [ -n "${HOSTNAME}" ]; then
     juju-log "Got hostname ${HOSTNAME}"
 fi
 
+PARTIALRELEASES=$(config-get partialreleases)
 RELEASES=$(config-get releases)
 COMPONENTS="main universe multiverse restricted"
 ARCHES=$(config-get arches)
@@ -38,23 +39,24 @@ A=$(make_json_array ${ARCHES})
 
 SUITES=()
 
-for r in ${RELEASES}; do
-    for release in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
+function make_suite_entry {
+        local suite="$1"
+        local r="$2"
         priority=0
-        if [ ${release#${r}-} = "updates" ]; then
+        if [ ${suite#${r}-} = "updates" ]; then
                 priority=10
         fi
-        if [ ${release#${r}-} = "security" ]; then
+        if [ ${suite#${r}-} = "security" ]; then
                 priority=20
         fi
-        if [ ${release#${r}-} = "proposed" ]; then
+        if [ ${suite#${r}-} = "proposed" ]; then
                 priority=30
         fi
-        if [ ${release#${r}-} = "backports" ]; then
+        if [ ${suite#${r}-} = "backports" ]; then
                 priority=40
         fi
         IFS=$'\n' SUITES+=("
-  \\\"${release}\\\":
+  \\\"${suite}\\\":
     {
       \\\"useIconTheme\\\": \\\"Humanity\\\",
       \\\"baseSuite\\\": \\\"${r}\\\",
@@ -62,6 +64,17 @@ for r in ${RELEASES}; do
       \\\"sections\\\": ${C},
       \\\"architectures\\\": ${A}
     },")
+}
+
+for r in ${RELEASES}; do
+    for suite in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
+            make_suite_entry "${suite}" "${r}"
+    done
+done
+
+for r in ${PARTIALRELEASES}; do
+    for suite in ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
+            make_suite_entry "${suite}" "${r}"
     done
 done
 
