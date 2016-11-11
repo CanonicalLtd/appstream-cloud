@@ -55,6 +55,7 @@ function make_suite_entry {
         if [ ${suite#${r}-} = "backports" ]; then
                 priority=40
         fi
+        OLDIFS=${IFS}
         IFS=$'\n' SUITES+=("
   \\\"${suite}\\\":
     {
@@ -64,6 +65,7 @@ function make_suite_entry {
       \\\"sections\\\": ${C},
       \\\"architectures\\\": ${A}
     },")
+        IFS=${OLDIFS}
 }
 
 for r in ${RELEASES}; do
