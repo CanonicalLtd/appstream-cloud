@@ -16,8 +16,9 @@ FORGET_FILE=${BASE_DIR}/forget
 
 ARCHES="#ARCHES#"
 RELEASES="#RELEASES#"
+PARTIALRELEASES="#PARTIALRELEASES"
 
-for release in ${RELEASES}; do
+for release in ${RELEASES} ${PARTIALRELEASES}; do
     for suite in proposed security backports updates; do
         RELEASES=${RELEASES}${RELEASES:+ }${release}-${suite}
     done

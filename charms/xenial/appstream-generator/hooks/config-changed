@@ -105,7 +105,7 @@ done
 cat <<EOF | su - ubuntu
 set -e
 
-sed -e 's/#RELEASES#/${RELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+sed -e 's/#RELEASES#/${RELEASES}/; s/#PARTIALRELEASES#/${PARTIALRELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
 
 chmod a+x ~/update-appstream.sh
 
