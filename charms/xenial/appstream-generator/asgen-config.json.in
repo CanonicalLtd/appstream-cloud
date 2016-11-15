@@ -1,7 +1,7 @@
 {
   "ProjectName" : "Ubuntu",
   "ArchiveRoot" : "#MIRROR#",
-  "MediaBaseUrl" : "#HOSTNAME#/asgen-media",
+  "MediaBaseUrl" : "#HOSTNAME#/media",
   "HtmlBaseUrl" : "#HOSTNAME#",
   "Backend" : "ubuntu",
   "Features":
