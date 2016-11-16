@@ -73,7 +73,7 @@ cp -a /usr/share/javascript/jquery/jquery.min.js "${JS_DIR}/jquery/jquery.min.js
 mkdir -p "${JS_DIR}/highlight"
 cp -a /usr/share/javascript/highlight.js/highlight.min.js "${JS_DIR}/highlight/highlight.pack.js"
 
-rsync -a --delete-after "${WORKSPACE_DIR}/export/" "${PUBLIC_DIR}/"
+rsync -a --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
 
 # finish logging
