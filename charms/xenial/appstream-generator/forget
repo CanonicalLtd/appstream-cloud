@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 
-import gzip
-import yaml
-import os
+import glob
+import json
+import lzma
 import sys
+
+tag = sys.argv[1]
 
 p = set()
 
-for (dirpath, dirnames, filenames) in os.walk('/srv/appstream/appstream-public/hints/'):
-  for filename in filenames:
-    fn = os.path.join (dirpath, filename)
-    with gzip.open(fn, 'rb') as f:
-      for doc in yaml.load_all (f):
-        for hint in doc['Hints']:
-          if hint['tag'] == sys.argv[1]:
-              p.add(doc['Package'])
+for filename in glob.glob('/srv/appstream/appstream-public/hints/*/*/Hints-*.xz'):
+    f = lzma.open(filename, 'rt', encoding='utf-8')
+    j = json.load(f)
+    for (k, v) in {k: v for d in [f['hints'] for f in j] for k, v in d.items()}.items():
+        for i in v:
+            if i['tag'] == tag:
+                    p.add(k)
 
-for pkg in sorted(p):
-    print(pkg)
+print (' '.join(sorted(p)))
