@@ -36,6 +36,7 @@ cd ${WORKSPACE_DIR}
 if [ -e "${FORGET_FILE}" ]; then
     . ${FORGET_FILE}
     for pkg in ${CLEAN_PKGS}; do
+        echo "Forgetting ${pkg}"
         ${ASGEN} -w ${WORKSPACE_DIR} forget ${pkg}
     done
     rm ${FORGET_FILE}
