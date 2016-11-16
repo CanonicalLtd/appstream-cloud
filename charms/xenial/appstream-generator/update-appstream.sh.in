@@ -60,7 +60,11 @@ if [ -e "${CLEAN_FILE}" ]; then
     rm "${CLEAN_FILE}"
 fi
 
+echo "Compressing log files"
+
 find "${LOG_BASE_DIR}" -type f -name \*.log ! -newermt '2 days ago' -print0 | xargs -0r xz -9
+
+echo "Updating js"
 
 rm -rf "${JS_DIR}"
 mkdir -p "${JS_DIR}"
@@ -73,8 +77,12 @@ cp -a /usr/share/javascript/jquery/jquery.min.js "${JS_DIR}/jquery/jquery.min.js
 mkdir -p "${JS_DIR}/highlight"
 cp -a /usr/share/javascript/highlight.js/highlight.min.js "${JS_DIR}/highlight/highlight.pack.js"
 
-rsync -a --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" "${PUBLIC_DIR}/"
+echo "Updating ${PUBLIC_DIR}"
+
+rsync -a --verbose --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
+
+echo "Done"
 
 # finish logging
 exec > /dev/null 2>&1
