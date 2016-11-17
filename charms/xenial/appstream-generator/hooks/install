@@ -18,6 +18,7 @@ apt-get -y install libappstream-dev \
                    libglib2.0-dev \
                    liblmdb-dev \
                    libmustache-d-dev \
+                   libpango1.0-dev \
                    librsvg2-dev
 
 apt-get -y install libjs-highlight.js \
