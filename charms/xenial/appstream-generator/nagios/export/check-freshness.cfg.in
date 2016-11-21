@@ -1,6 +1,6 @@
 define service {
     use                 active-service
-    host_name           prod-ue-appstream-back-appstream-dep11-1
+    host_name           @NAGIOS_HOSTNAME@
     service_description Freshness of AppStream data
     check_command       check_nrpe!check_freshness
     servicegroups       prod-ue-appstream-back-prompt-critical
