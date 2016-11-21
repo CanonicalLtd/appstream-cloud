@@ -8,6 +8,8 @@ import sys
 import time
 from datetime import timedelta
 
+PARTIALRELEASES'#PARTIALRELEASES#'.split()
+
 DIR=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'appstream-public', 'html')
 
 MAX_AGE=timedelta(days=1)
@@ -23,10 +25,10 @@ for subdir in os.listdir(DIR):
 
                 delta = timedelta(seconds=(now - mtime))
 
-                if delta >= MAX_AGE:
+                if delta >= MAX_AGE and (subdir not in PARTIALRELEASES):
                         RET = 2
 
-                status[subdir] = (delta < MAX_AGE, str(delta))
+                status[subdir] = (delta < MAX_AGE or (subdir in PARTIALRELEASES), str(delta))
 
 print("Freshness %s|" % ("OK" if RET == 0 else "NOT OK"))
 

@@ -80,5 +80,3 @@ if [ ! -e appstream-public/logs ]; then
     ln -sf ../logs appstream-public/logs
 fi
 EOF
-
-ln -sf "${CHARM_DIR}/check-public-mtimes" /srv/appstream/check-public-mtimes
