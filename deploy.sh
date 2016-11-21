@@ -53,6 +53,7 @@ extra_prodstack_configuration() {
     [ -d "$MYDIR/charms/trusty/ksplice" ] || { echo "Please check out ksplice charm to $MYDIR/charms/trusty"; exit 1; }
     [ -d "$MYDIR/charms/trusty/nrpe-external-master" ] || { echo "Please check out nrpe-external-master charm to ${MYDIR}/charms/trusty"; exit 1; }
     [ -d "$MYDIR/charms/trusty/turku-agent" ] || { echo "Please check out turku-agent charm to ${MYDIR}/charms/trusty"; exit 1; }
+    [ -d "$MYDIR/charms/trusty/block-storage-broker" ] || { echo "Please check out block-storage-broker charm to ${MYDIR}/charms/trusty"; exit 1; }
 
     for charm in landscape-client ksplice nrpe-external-master turku-agent; do
             FROM=${MYDIR}/charms/xenial/${charm}
@@ -133,7 +134,7 @@ EOF
 
     if ! juju status | grep -q block-storage-broker:; then
             $MYDIR/generate-block-storage-broker-yaml.sh >> "${CONFIG_YAML}"
-            juju-deploy --config "${CONFIG_YAML}" block-storage-broker
+            juju-deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/block-storage-broker
             wait_deployed "block-storage-broker"
     fi
 
@@ -168,7 +169,7 @@ EOF
 cat <<EOF >> "${CONFIG_YAML}"
 storage:
         provider: block-storage-broker
-        volume_size: 20
+        volume_size: 50
         volume_label: ${PROJECT}-data
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" local:xenial/storage
