@@ -80,7 +80,7 @@ cp -a /usr/share/javascript/highlight.js/highlight.min.js "${JS_DIR}/highlight/h
 
 echo "Updating ${PUBLIC_DIR}"
 
-rsync -a --verbose --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" "${PUBLIC_DIR}/"
+rsync -a --verbose --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" --filter "protect html/xenial" --filter "protect html/yakkety" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
 
 echo "Done"
