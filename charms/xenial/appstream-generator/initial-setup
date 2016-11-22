@@ -64,6 +64,9 @@ if [ ! -d "appstream-generator" ]; then
     HOME=/tmp/fakehome dub add-local /tmp/dub-repo/mustache-d 0.1.1
     HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel --compiler=ldc2
 fi
+if [ ! -d "/srv/appstream/appstream-generator/data/templates/default/static/js" ]; then
+        mkdir "/srv/appstream/appstream-generator/data/templates/default/static/js"
+fi
 EOF
 
 chown ubuntu:ubuntu /srv/appstream
