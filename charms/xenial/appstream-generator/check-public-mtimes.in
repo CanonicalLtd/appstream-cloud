@@ -8,7 +8,7 @@ import sys
 import time
 from datetime import timedelta
 
-PARTIALRELEASES'#PARTIALRELEASES#'.split()
+PARTIALRELEASES='#PARTIALRELEASES#'.split()
 
 DIR=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'appstream-public', 'html')
 
