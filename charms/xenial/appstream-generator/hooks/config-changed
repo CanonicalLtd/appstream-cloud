@@ -79,7 +79,7 @@ for r in ${PARTIALRELEASES}; do
     for suite in ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
             make_suite_entry "${suite}" "${r}"
     done
-    OLDSUITES+=("\"${suite}\",")
+    OLDSUITES+=("\"${r}\",")
 done
 
 # remove last character (trailing comma, thanks a bunch json)
