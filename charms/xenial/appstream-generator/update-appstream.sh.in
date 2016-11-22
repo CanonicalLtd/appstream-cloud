@@ -31,6 +31,8 @@ NOW=`date "+%d_%H%M"`
 LOGFILE="${logdir}/${NOW}.log"
 exec >> "${LOGFILE}" 2>&1
 
+echo "Reticulating splines"
+
 cd ${WORKSPACE_DIR}
 
 if [ -e "${FORGET_FILE}" ]; then
@@ -53,18 +55,6 @@ for release in ${RELEASES}; do
     ${ASGEN} -w ${WORKSPACE_DIR} process ${release}
 done
 
-echo "Running cleanup"
-${ASGEN} -w ${WORKSPACE_DIR} cleanup
-
-if [ -e "${CLEAN_FILE}" ]; then
-    rm -rf "${WORKSPACE_DIR}/media"
-    rm "${CLEAN_FILE}"
-fi
-
-echo "Compressing log files"
-
-find "${LOG_BASE_DIR}" -type f -name \*.log ! -newermt '2 days ago' -print0 | xargs -0r xz -9
-
 echo "Updating js"
 
 rm -rf "${JS_DIR}"
@@ -82,6 +72,18 @@ echo "Updating ${PUBLIC_DIR}"
 
 rsync -a --verbose --delete-after "${WORKSPACE_DIR}/export/" --filter "protect media/main" --filter "protect media/universe" --filter "protect media/multiverse" --filter "protect media/restricted" --filter "protect data/xenial" --filter "protect data/yakkety" --filter "protect html/xenial" --filter "protect html/yakkety" "${PUBLIC_DIR}/"
 touch ${STAMP_FILE}
+
+echo "Running cleanup"
+${ASGEN} -w ${WORKSPACE_DIR} cleanup
+
+if [ -e "${CLEAN_FILE}" ]; then
+    rm -rf "${WORKSPACE_DIR}/media"
+    rm "${CLEAN_FILE}"
+fi
+
+echo "Compressing log files"
+
+find "${LOG_BASE_DIR}" -type f -name \*.log ! -newermt '2 days ago' -print0 | xargs -0r xz -9
 
 echo "Done"
 
