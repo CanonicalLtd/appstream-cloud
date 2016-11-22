@@ -109,7 +109,7 @@ cat <<EOF | su - ubuntu
 set -e
 
 sed -e 's/#RELEASES#/${RELEASES}/; s/#PARTIALRELEASES#/${PARTIALRELEASES}/; s/#ARCHES#/${ARCHES}/' ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
-sed -e 's/#PARTIALRELEAES#/${PARTIALRELEASES}' ${CHARM_DIR}/check-public-mtimes.in > /srv/appstream/check-public-mtimes
+sed -e 's/#PARTIALRELEAES#/${PARTIALRELEASES}/' ${CHARM_DIR}/check-public-mtimes.in > /srv/appstream/check-public-mtimes
 
 chmod a+x ~/update-appstream.sh
 
