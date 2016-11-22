@@ -3,6 +3,7 @@
   "ArchiveRoot" : "#MIRROR#",
   "MediaBaseUrl" : "#HOSTNAME#/media",
   "HtmlBaseUrl" : "#HOSTNAME#",
+  "Oldsuites": #OLDSUITES#,
   "Backend" : "ubuntu",
   "Features":
     {

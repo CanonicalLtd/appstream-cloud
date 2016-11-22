@@ -38,6 +38,7 @@ C=$(make_json_array ${COMPONENTS})
 A=$(make_json_array ${ARCHES})
 
 SUITES=()
+OLDSUITES=()
 
 function make_suite_entry {
         local suite="$1"
@@ -78,12 +79,14 @@ for r in ${PARTIALRELEASES}; do
     for suite in ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
             make_suite_entry "${suite}" "${r}"
     done
+    OLDSUITES+=("\"${suite}\",")
 done
 
 # remove last character (trailing comma, thanks a bunch json)
 SUITES[-1]=${SUITES[-1]%?}
+OLDSUITES[-1]=${OLDSUITES[-1]%?}
 
-IFS=$'\n' sed -e "s@#HOSTNAME#@${HOSTNAME:-$(hostname -f)}@; s@#MIRROR#@${MIRROR}@" ${INPUT_FILENAME} > ${OUTPUT_FILENAME}
+IFS=$'\n' sed -e "s@#HOSTNAME#@${HOSTNAME:-$(hostname -f)}@; s@#MIRROR#@${MIRROR}@; s@#OLDSUITES#@[${OLDSUITES[*]}]@" ${INPUT_FILENAME} > ${OUTPUT_FILENAME}
 
 printf "${SUITES[*]}" >> ${OUTPUT_FILENAME}
 echo "
