@@ -1,0 +1,6 @@
+To update the configuration, edit config.json, *verify that it is valid json*
+and then run
+
+ $ juju set appstream-generator config="$(cat config.json)"
+
+Sadly Juju doesn't have a native json type currently, so it has to be passed in as a string and deserialised on the other side.

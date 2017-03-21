@@ -6,16 +6,9 @@ options:
     hostname:
         description: The hostname the service will be presented on
         type: string
-    releases:
-        default: zesty
-        description: The releases to act on (space separated)
+    config:
+        description: The configuration of the asgen (releases, etc - see config.json)
         type: string
-    partialreleases:
-        default: xenial yakkety
-        description: The releases to act on (space separated)
-        type: string
-    arches:
-        default: amd64 arm64 armhf i386 powerpc ppc64el s390x
     mirror:
         default: archive.ubuntu.com
     git-host:

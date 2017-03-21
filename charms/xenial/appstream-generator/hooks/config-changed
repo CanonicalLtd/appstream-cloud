@@ -18,80 +18,9 @@ if [ -n "${HOSTNAME}" ]; then
     juju-log "Got hostname ${HOSTNAME}"
 fi
 
-PARTIALRELEASES=$(config-get partialreleases)
-RELEASES=$(config-get releases)
-COMPONENTS="main universe multiverse restricted"
-ARCHES=$(config-get arches)
 MIRROR=$(config-get mirror)
-
-juju-log "Got releases ${RELEASES} and arches ${ARCHES} and mirror ${MIRROR}"
-
-function make_json_array {
-        echo -n "["
-        local out=$(printf ", \"%s\"" $*)
-        # remove trailing comma
-        echo -n ${out:2}
-        echo "]"
-}
-
-C=$(make_json_array ${COMPONENTS})
-A=$(make_json_array ${ARCHES})
-
-SUITES=()
-OLDSUITES=()
-
-function make_suite_entry {
-        local suite="$1"
-        local r="$2"
-        priority=0
-        if [ ${suite#${r}-} = "updates" ]; then
-                priority=10
-        fi
-        if [ ${suite#${r}-} = "security" ]; then
-                priority=20
-        fi
-        if [ ${suite#${r}-} = "proposed" ]; then
-                priority=30
-        fi
-        if [ ${suite#${r}-} = "backports" ]; then
-                priority=40
-        fi
-        OLDIFS=${IFS}
-        IFS=$'\n' SUITES+=("
-  \\\"${suite}\\\":
-    {
-      \\\"useIconTheme\\\": \\\"Humanity\\\",
-      \\\"baseSuite\\\": \\\"${r}\\\",
-      \\\"dataPriority\\\": ${priority},
-      \\\"sections\\\": ${C},
-      \\\"architectures\\\": ${A}
-    },")
-        IFS=${OLDIFS}
-}
-
-for r in ${RELEASES}; do
-    for suite in ${r} ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
-            make_suite_entry "${suite}" "${r}"
-    done
-done
-
-for r in ${PARTIALRELEASES}; do
-    for suite in ${r}-proposed ${r}-updates ${r}-security ${r}-backports; do
-            make_suite_entry "${suite}" "${r}"
-    done
-    OLDSUITES+=("\"${r}\",")
-done
-
-# remove last character (trailing comma, thanks a bunch json)
-SUITES[-1]=${SUITES[-1]%?}
-OLDSUITES[-1]=${OLDSUITES[-1]%?}
-
-IFS=$'\n' sed -e "s@#HOSTNAME#@${HOSTNAME:-$(hostname -f)}@; s@#MIRROR#@${MIRROR}@; s@#OLDSUITES#@[${OLDSUITES[*]}]@" ${INPUT_FILENAME} > ${OUTPUT_FILENAME}
-
-printf "${SUITES[*]}" >> ${OUTPUT_FILENAME}
-echo "
-    }
-}" >> ${OUTPUT_FILENAME}
+CONFIG=$(config-get config)
+echo "${CONFIG}" | ./generate-config "${MIRROR}" "${HOSTNAME}" > "${OUTPUT_FILENAME}"
 
 juju-log 'Adding proxy settings'
 

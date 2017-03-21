@@ -1,0 +1,64 @@
+#!/usr/bin/python3
+
+import json
+import sys
+
+DEFAULT_PRIORITY = 0
+
+PRIORITIES = {
+    'updates': 10,
+    'security': 20,
+    'proposed': 30,
+    'backports': 40,
+}
+
+HEADER = {
+  'ProjectName' : 'Ubuntu',
+  'Backend' : 'ubuntu',
+  'Oldsuites': [],
+  'Suites': {},
+  'Features':
+    {
+      'validateMetainfo': True
+    },
+}
+
+def processSuite(release, info, default_arches, default_suites):
+    out = {}
+    for suite in ('%s%s' % (release, s) for s in info.get('suites', default_suites)):
+        out[suite] = {
+            'useIconTheme': 'Humanity',
+            'baseSuite': release,
+            'dataPriority': PRIORITIES.get(suite.split('-')[-1], DEFAULT_PRIORITY),
+            'sections': ['main', 'universe', 'multiverse', 'restricted'],
+            'architectures': info.get('architectures', default_arches)
+        }
+
+    return out
+
+def main():
+    mirror = sys.argv[1]
+    hostname = sys.argv[2]
+    j = json.load(sys.stdin)
+    sys.stdin.close()
+
+    # Read the defaults
+    default_arches = j['default']['architectures']
+    default_suites = j['default']['suites']
+    del j['default']
+
+    o = HEADER
+    o['ArchiveRoot'] = mirror
+    o['MediaBaseUrl'] = '%s/media' % hostname
+    o['HtmlBaseUrl'] = hostname
+
+    # Now do the rest
+    for (release, ting) in j.items():
+        if ting.get('oldSuite', False):
+            HEADER['Oldsuites'].append(release)
+        o['Suites'].update(processSuite(release, ting, default_arches, default_suites))
+
+    print(json.dumps(o, sort_keys=True, indent=4))
+
+if __name__ == '__main__':
+    main()
