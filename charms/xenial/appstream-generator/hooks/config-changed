@@ -42,7 +42,7 @@ cat <<EOF | su - ubuntu
 set -e
 
 rm ~/update-appstream.sh
-cp -a ${CHARM_DIR}/update-appstream.sh.in > ~/update-appstream.sh
+cp -a ${CHARM_DIR}/update-appstream.sh ~/update-appstream.sh
 sed -e 's/#PARTIALRELEASES#/${PARTIALRELEASES}/' ${CHARM_DIR}/check-public-mtimes.in > /srv/appstream/check-public-mtimes
 chmod +x /srv/appstream/check-public-mtimes
 
