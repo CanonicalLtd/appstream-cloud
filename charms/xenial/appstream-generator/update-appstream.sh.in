@@ -14,15 +14,7 @@ VIRTUALENV_DIR=${BASE_DIR}/appstream
 CLEAN_FILE=${BASE_DIR}/clean
 FORGET_FILE=${BASE_DIR}/forget
 
-ARCHES="#ARCHES#"
-RELEASES="#RELEASES#"
-PARTIALRELEASES="#PARTIALRELEASES#"
-
-for release in ${RELEASES} ${PARTIALRELEASES}; do
-    for suite in proposed security backports updates; do
-        RELEASES=${RELEASES}${RELEASES:+ }${release}-${suite}
-    done
-done
+RELEASES=$(jq -r '.Suites | keys | reduce .[] as $item ("";. + " " + $item) | ltrimstr(" ")' "${WORKSPACE_DIR}/asgen-config.json")
 
 # Start logging
 logdir="${LOG_BASE_DIR}/`date "+%Y/%m"`"
