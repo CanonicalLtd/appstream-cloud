@@ -13,5 +13,7 @@
                 "suites": ["-proposed", "-updates", "-security", "-backports"],
                 "oldSuite": true
         },
-        "zesty" : {}
+        "zesty" : {
+                "suites": ["-proposed", "-updates", "-security", "-backports"]
+        }
 }
