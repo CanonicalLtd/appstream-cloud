@@ -33,6 +33,12 @@ def processSuite(release, info, default_arches, default_suites):
             'sections': ['main', 'universe', 'multiverse', 'restricted'],
             'architectures': info.get('architectures', default_arches)
         }
+    try:
+        # if we have 'released' : true, make the base suite immutable
+        info['released']
+        out[release]['immutable'] = True
+    except KeyError:
+        pass
 
     return out
 
