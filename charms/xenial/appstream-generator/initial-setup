@@ -57,15 +57,10 @@ cd /srv/appstream
 
 if [ ! -d "appstream-generator" ]; then
     git clone --recursive "${giturl}" -b "${branch}" appstream-generator
-    cd appstream-generator
-    mkdir /tmp/dub-repo
-    mkdir /tmp/fakehome
-    cp -dr /usr/include/d/mustache-d /tmp/dub-repo
-    HOME=/tmp/fakehome dub add-local /tmp/dub-repo/mustache-d 0.1.1
-    HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel --compiler=ldc2
-fi
-if [ ! -d "/srv/appstream/appstream-generator/data/templates/default/static/js" ]; then
-        mkdir "/srv/appstream/appstream-generator/data/templates/default/static/js"
+    mkdir appstream-generator/build
+    cd appstream-generator/build
+    meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
+    ninja && ninja install
 fi
 EOF
 

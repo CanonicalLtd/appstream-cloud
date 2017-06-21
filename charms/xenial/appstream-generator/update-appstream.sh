@@ -4,7 +4,7 @@ set -e
 
 BASE_DIR=/srv/appstream
 
-ASGEN=${BASE_DIR}/appstream-generator/build/appstream-generator
+ASGEN=${BASE_DIR}/as-installed/bin/appstream-generator
 PUBLIC_DIR=${BASE_DIR}/appstream-public
 WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
 JS_DIR=${WORKSPACE_DIR}/export/html/static/js
