@@ -57,8 +57,13 @@ cd /srv/appstream
 
 if [ ! -d "appstream-generator" ]; then
     git clone --recursive "${giturl}" -b "${branch}" appstream-generator
-    mkdir appstream-generator/build
+    if [ ! -d appstream-generator/build ]; then
+        mkdir appstream-generator/build
+    fi
     cd appstream-generator/build
+    if [ ! -d /srv/appstream/as-installed ]; then
+        mkdir /srv/appstream/as-installed/
+    fi
     meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
     ninja && ninja install
 fi

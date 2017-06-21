@@ -19,15 +19,15 @@ git checkout ${branch}
 git reset --hard origin/${branch}
 git clean -fdx
 git submodule update --init
-mkdir /tmp/dub-repo
-mkdir /tmp/fakehome
-cp -dr /usr/include/d/mustache-d /tmp/dub-repo
-HOME=/tmp/fakehome dub add-local /tmp/dub-repo/mustache-d 0.1.1
-HOME=/tmp/fakehome dub -v --skip-registry=standard build --parallel --compiler=ldc2
-
-if [ ! -d "${BUILD_DIR}/data/templates/default/static/js" ]; then
-        mkdir "${BUILD_DIR}/data/templates/default/static/js"
+if [ ! -d build ]; then
+    mkdir build
 fi
+cd build
+if [ ! -d /srv/appstream/as-installed ]; then
+    mkdir /srv/appstream/as-installed/
+fi
+meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
+ninja && ninja install
 EOF
 
     cd ${BUILD_DIR}
