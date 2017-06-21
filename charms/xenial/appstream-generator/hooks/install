@@ -22,7 +22,8 @@ apt-get -y install libjs-highlight.js \
                    libjs-jquery \
                    libjs-jquery-flot
 
-apt-get -t xenial-backports -y install libarchive-dev \
+apt-get -t xenial-backports -y install gir-to-d \
+                                       libarchive-dev \
                                        libappstream-dev \
                                        liblmdb-dev \
                                        libmustache-d-dev \
