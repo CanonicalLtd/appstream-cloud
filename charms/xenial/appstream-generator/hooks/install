@@ -14,6 +14,7 @@ apt update
 apt-get -y install libcairo2-dev \
                    libcurl4-gnutls-dev \
                    libgdk-pixbuf2.0-dev \
+                   libgirepository1.0-dev \
                    libglib2.0-dev \
                    libpango1.0-dev \
                    librsvg2-dev
