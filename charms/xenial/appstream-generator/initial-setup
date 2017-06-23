@@ -66,6 +66,9 @@ if [ ! -d "appstream-generator" ]; then
     fi
     meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
     ninja && ninja install
+    if [ ! -d "/srv/appstream/as-installed/share/appstream/templates/default/static/js" ]; then
+       mkdir "/srv/appstream/as-installed/share/appstream/templates/default/static/js"
+    fi
 fi
 EOF
 

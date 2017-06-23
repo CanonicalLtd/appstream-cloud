@@ -10,6 +10,10 @@ juju-log 'Upgrading charm'
 giturl=$(config-get git-host)
 branch=$(config-get git-branch)
 
+if [ ! -d /srv/appstream/as-installed ]; then
+    mkdir /srv/appstream/as-installed/
+    chown appstream:appstream /srv/appstream/as-installed/
+fi
 if [ -d "${BUILD_DIR}" ]; then
     cat <<EOF | su - appstream
 cd ${BUILD_DIR}
@@ -23,11 +27,11 @@ if [ ! -d build ]; then
     mkdir build
 fi
 cd build
-if [ ! -d /srv/appstream/as-installed ]; then
-    mkdir /srv/appstream/as-installed/
-fi
 meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
 ninja && ninja install
+if [ ! -d "/srv/appstream/as-installed/share/appstream/templates/default/static/js" ]; then
+    mkdir "/srv/appstream/as-installed/share/appstream/templates/default/static/js"
+fi
 EOF
 
     cd ${BUILD_DIR}
