@@ -18,5 +18,6 @@
         },
         "artful" : {
                 "released" : true
-        }
+        },
+        "bionic" : {}
 }
