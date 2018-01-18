@@ -8,14 +8,6 @@
                 "suites": ["-proposed", "-updates", "-security", "-backports"],
                 "oldSuite": true
         },
-        "yakkety" : {
-                "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "powerpc", "s390x"],
-                "suites": ["-proposed", "-updates", "-security", "-backports"],
-                "oldSuite": true
-        },
-        "zesty" : {
-                "released" : true
-        },
         "artful" : {
                 "released" : true
         },
