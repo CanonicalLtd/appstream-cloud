@@ -2,5 +2,9 @@
 
 set -e
 
+if [ -e laney-ubuntu-appstream-xenial.list ]; then
+        add-apt-repository -r ppa:laney/appstream
+fi
+
 # Run the install hook - this will install any new deps etc
 . ${CHARM_DIR}/hooks/install
