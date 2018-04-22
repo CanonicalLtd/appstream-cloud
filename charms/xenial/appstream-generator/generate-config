@@ -28,11 +28,12 @@ def processSuite(release, info, default_arches, default_suites):
     for suite in ('%s%s' % (release, s) for s in info.get('suites', default_suites)):
         out[suite] = {
             'useIconTheme': 'Humanity',
-            'baseSuite': release,
             'dataPriority': PRIORITIES.get(suite.split('-')[-1], DEFAULT_PRIORITY),
             'sections': ['main', 'universe', 'multiverse', 'restricted'],
             'architectures': info.get('architectures', default_arches)
         }
+        if suite != release:
+            out[suite]['baseSuite'] = release
     try:
         # if we have 'released' : true, make the base suite immutable
         info['released']
