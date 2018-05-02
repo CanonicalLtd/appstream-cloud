@@ -11,5 +11,8 @@
         "artful" : {
                 "released" : true
         },
-        "bionic" : {}
+        "bionic" : {
+                "released" : true
+        },
+        "cosmic" : {}
 }
