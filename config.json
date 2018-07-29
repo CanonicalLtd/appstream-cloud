@@ -8,9 +8,6 @@
                 "suites": ["-proposed", "-updates", "-security", "-backports"],
                 "oldSuite": true
         },
-        "artful" : {
-                "released" : true
-        },
         "bionic" : {
                 "released" : true
         },
