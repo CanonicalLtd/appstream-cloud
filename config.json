@@ -11,5 +11,7 @@
         "bionic" : {
                 "released" : true
         },
-        "cosmic" : {}
+        "cosmic" : {
+                "released" : true
+        }
 }
