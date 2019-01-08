@@ -159,12 +159,12 @@ else
 apache2:
   disable_modules: status
 EOF
-      juju deploy --num-units=2 --repository "$MYDIR/charms" local:trusty/apache2
+      juju deploy ---config "${CONFIG_YAML}" -num-units=2 --constraints "root-disk=50G" --repository "$MYDIR/charms" local:trusty/apache2
       DEPLOYED_APACHE=1
     fi
 
     if ! juju status | grep -q haproxy:; then
-      juju deploy --repository "$MYDIR/charms" local:trusty/haproxy
+      juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/haproxy
       DEPLOYED_HAPROXY=1
     fi
 
