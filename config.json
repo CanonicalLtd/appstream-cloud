@@ -14,5 +14,8 @@
         "cosmic" : {
                 "released" : true
         },
-        "disco" : {}
+        "disco" : {
+                "released" : true
+        },
+        "eoan" : {}
 }
