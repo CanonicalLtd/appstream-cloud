@@ -14,5 +14,7 @@
         "disco" : {
                 "released" : true
         },
-        "eoan" : {}
+        "eoan" : {
+                "released" : true
+        }
 }
