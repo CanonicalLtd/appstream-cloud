@@ -16,5 +16,6 @@
         },
         "eoan" : {
                 "released" : true
-        }
+        },
+        "focal" : {}
 }
