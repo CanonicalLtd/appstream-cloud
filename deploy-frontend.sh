@@ -124,6 +124,47 @@ EOF
         juju deploy --repository "${MYDIR}/charms" --to 0 local:trusty/bootstrap-node
         wait_deployed "bootstrap-node"
     fi
+
+    if ! juju status | grep -q autocert:; then
+        cat <<EOF >> "${CONFIG_YAML}"
+autocert:
+  autocert_host: autocert.canonical.com
+  cert_additional_names: appstream.ubuntu.com=default
+  cert_auth_pairs: $(cat /srv/mojo/LOCAL/mojo-${PROJECT}/cert_auth_pairs)
+  dir_certs: /var/lib/haproxy
+  dir_keys: /var/lib/haproxy
+  service_action: reload
+  service_name: haproxy
+  suffix_cert: ".pem"
+  suffix_chain: ".pem"
+  suffix_key: ".pem"
+haproxy:
+    services: | 
+        - service_name: https_service
+          service_host: "::"
+          service_port: 443
+          crts: [DEFAULT]
+          service_options:
+              - balance leastconn
+              - cookie SRVNAME insert
+              - option httpchk HEAD / HTTP/1.0
+              - http-request set-header X-Forwarded-Proto https
+              - "redirect prefix https://appstream.ubuntu.com code 301 unless { hdr(host) -i appstream.ubuntu.com }"
+          server_options: check inter 10000 rise 2 fall 5 maxconn 512 cookie S{i}
+        - service_name: http_redirect_to_https
+          service_host: "::"
+          service_port: 80
+          service_options:
+              - "redirect prefix https://appstream.ubuntu.com code 301 unless { hdr(host) -i appstream.ubuntu.com }"
+              - "redirect scheme https code 301 if ! { ssl_fc }"
+    ssl_cert: DEFAULT
+EOF
+        juju deploy --config "${CONFIG_YAML}" cs:~autocert-charmers/trusty/autocert
+        wait_deployed autocert
+        juju add-relation haproxy autocert
+        juju set --config "${CONFIG_YAML}" haproxy
+    fi
+
     subordinate_charms "bootstrap-node"
 
     subordinate_charms "apache2"
