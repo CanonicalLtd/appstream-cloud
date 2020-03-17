@@ -38,7 +38,9 @@ subordinate_charms() {
     fi
 
     if ! juju status "${1}" | grep -q turku-agent; then
-        juju add-relation ${SERIES}-turku-agent "$1"
+        if [ -e "${HOME}/turku.key" ]; then
+            juju add-relation ${SERIES}-turku-agent "$1"
+        fi
     fi
 
     wait_deployed "$1"
