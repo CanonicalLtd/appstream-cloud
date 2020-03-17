@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 MYDIR=$(dirname "$(readlink -f $0)")
 PROJECT=$(id -un)
 
@@ -134,7 +136,7 @@ EOF
 
     if ! juju status | grep -q block-storage-broker:; then
             $MYDIR/generate-block-storage-broker-yaml.sh >> "${CONFIG_YAML}"
-            juju-deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/block-storage-broker
+            juju deploy --config "${CONFIG_YAML}" --repository "$MYDIR/charms" local:trusty/block-storage-broker
             wait_deployed "block-storage-broker"
     fi
 
