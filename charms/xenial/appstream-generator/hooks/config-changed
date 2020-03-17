@@ -38,7 +38,7 @@ SUITES=${SUITES:+${SUITES} }$(jq -r '.Suites | to_entries | map(select (.value.i
 cat <<EOF | su - ubuntu
 set -e
 
-rm ~/update-appstream.sh
+rm -f ~/update-appstream.sh
 cp -a ${CHARM_DIR}/update-appstream.sh ~/update-appstream.sh
 sed -e 's/#SUITES#/${SUITES}/' ${CHARM_DIR}/check-public-mtimes.in > /srv/appstream/check-public-mtimes
 chmod +x /srv/appstream/check-public-mtimes
