@@ -162,11 +162,13 @@ if juju status appstream-generator | grep -q 'agent-state:'; then
     APPSTREAM_ALREADY_DEPLOYED=1
 else
     trap "rm ${CONFIG_YAML}" EXIT INT QUIT PIPE
-    # temporarily set arches to amd64 only
+    CONFIG_JSON=$(cat "${MYDIR}/config.json")
     cat << EOF >> "${CONFIG_YAML}"
 appstream-generator:
     hostname: ${HOSTNAME:-}
     mirror: ${MIRROR:-}
+    config: |
+${CONFIG_JSON}
 EOF
     juju deploy --repository "${MYDIR}/charms" --config "${CONFIG_YAML}" --constraints "cpu-cores=8 mem=16G root-disk=50G" local:xenial/appstream-generator
     wait_deployed appstream-generator
