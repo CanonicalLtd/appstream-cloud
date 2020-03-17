@@ -50,28 +50,6 @@ juju-log 'Initial repository clone and build'
 giturl=$(config-get git-host)
 branch=$(config-get git-branch)
 
-cat <<EOF | su - appstream
-set -e
-
-cd /srv/appstream
-
-if [ ! -d "appstream-generator" ]; then
-    git clone --recursive "${giturl}" -b "${branch}" appstream-generator
-    if [ ! -d appstream-generator/build ]; then
-        mkdir appstream-generator/build
-    fi
-    cd appstream-generator/build
-    if [ ! -d /srv/appstream/as-installed ]; then
-        mkdir /srv/appstream/as-installed/
-    fi
-    meson -Ddownload_js=false --prefix=/srv/appstream/as-installed/
-    ninja && ninja install
-    if [ ! -d "/srv/appstream/as-installed/share/appstream/templates/default/static/js" ]; then
-       mkdir "/srv/appstream/as-installed/share/appstream/templates/default/static/js"
-    fi
-fi
-EOF
-
 chown ubuntu:ubuntu /srv/appstream
 
 cat <<EOF | su - ubuntu

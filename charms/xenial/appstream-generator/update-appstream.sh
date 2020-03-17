@@ -4,10 +4,9 @@ set -e
 
 BASE_DIR=/srv/appstream
 
-ASGEN=${BASE_DIR}/as-installed/bin/appstream-generator
+ASGEN=/snap/bin/appstream-generator
 PUBLIC_DIR=${BASE_DIR}/appstream-public
 WORKSPACE_DIR=${BASE_DIR}/appstream-workdir
-JS_DIR=${WORKSPACE_DIR}/export/html/static/js
 STAMP_FILE=${BASE_DIR}/last-update
 LOG_BASE_DIR=${BASE_DIR}/logs
 VIRTUALENV_DIR=${BASE_DIR}/appstream
@@ -46,19 +45,6 @@ for release in ${RELEASES}; do
     fi
     ${ASGEN} -w ${WORKSPACE_DIR} process ${release}
 done
-
-echo "Updating js"
-
-rm -rf "${JS_DIR}"
-mkdir -p "${JS_DIR}"
-
-cp -ar /usr/share/javascript/jquery-flot/ "${JS_DIR}/flot"
-
-mkdir -p "${JS_DIR}/jquery"
-cp -a /usr/share/javascript/jquery/jquery.min.js "${JS_DIR}/jquery/jquery.min.js"
-
-mkdir -p "${JS_DIR}/highlight"
-cp -a /usr/share/javascript/highlight.js/highlight.min.js "${JS_DIR}/highlight/highlight.pack.js"
 
 echo "Updating ${PUBLIC_DIR}"
 

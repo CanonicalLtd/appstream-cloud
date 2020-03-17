@@ -11,32 +11,9 @@ add-apt-repository -y ppa:ubuntu-desktop/appstream-generator
 
 apt update
 
-apt-get -y install docbook-xml \
-                   docbook-xsl \
-                   libcairo2-dev \
-                   libcurl4-gnutls-dev \
-                   libgdk-pixbuf2.0-dev \
-                   libgirepository1.0-dev \
-                   libglib2.0-dev \
-                   libpango1.0-dev \
-                   librsvg2-dev \
-                   xsltproc
-
 apt-get -y install libjs-highlight.js \
                    libjs-jquery \
                    libjs-jquery-flot
-
-apt-get -t xenial-backports -y install libarchive-dev \
-                                       liblmdb-dev
-
-# from the PPA
-apt-get -y install gir-to-d \
-                   ldc \
-                   libappstream-dev \
-                   libdcontainers-dev \
-                   libmustache-d-dev \
-                   libstdx-allocator-dev \
-                   meson
 
 juju-log 'Installing utilities'
 
@@ -52,5 +29,7 @@ apt-get -y install jq
 
 # for storage and ksplice (py2)
 apt-get -y install python-yaml python-six
+
+snap install --devmode --edge appstream-generator
 
 ${CHARM_DIR}/initial-setup
