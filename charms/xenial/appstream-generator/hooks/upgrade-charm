@@ -14,5 +14,16 @@ if [ -d /srv/appstream/as-installed ]; then
         rm -rf /srv/appstream/as-installed
 fi
 
+UBUNTU_HOMEDIR="$(getent passwd ubuntu | cut -d: -f6)"
+
+if [ "${UBUNTU_HOMEDIR}" != "/srv/appstream" ]; then
+        usermod -d /srv/appstream ubuntu
+        mv /home/ubuntu/update-appstream.sh /srv/appstream/
+fi
+
+if id appstream 2>/dev/null; then
+        userdel appstream
+fi
+
 # Run the install hook - this will install any new deps etc
 . ${CHARM_DIR}/hooks/install

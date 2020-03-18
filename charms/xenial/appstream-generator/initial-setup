@@ -1,9 +1,13 @@
 #!/bin/bash
 
+set -e
+
 if ! grep -qs /srv/appstream /proc/mounts; then
         juju-log "/srv/appstream is not mounted; skipping initial setup"
         exit 0
 fi
+
+usermod -d /srv/appstream ubuntu
 
 juju-log 'Installing config files'
 
@@ -35,20 +39,8 @@ cat <<EOF > /etc/rsync-juju.d/logs.conf
     gid = ubuntu
 EOF
 
-if ! getent passwd appstream > /dev/null; then
-    addgroup --gid 11111 appstream >/dev/null 2>&1
-    adduser --uid 11111 --gid 11111 --home /nonexistent --no-create-home --disabled-password --gecos "" appstream >/dev/null 2>&1
-fi
-
 service rsync restart
 open-port 873
-
-chown appstream:appstream /srv/appstream
-
-juju-log 'Initial repository clone and build'
-
-giturl=$(config-get git-host)
-branch=$(config-get git-branch)
 
 chown ubuntu:ubuntu /srv/appstream
 

@@ -11,10 +11,6 @@ options:
         type: string
     mirror:
         default: archive.ubuntu.com
-    git-host:
-        default: https://github.com/ximion/appstream-generator.git
-    git-branch:
-        default: master
     http_proxy:
     https_proxy:
     no_proxy:
