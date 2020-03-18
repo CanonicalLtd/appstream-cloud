@@ -1,9 +1,0 @@
-name: appstream-dep11
-maintainer: Iain Lane <iain.lane@canonical.com>
-summary: DEP-11 metadata generator
-description: |
-    Zaz
-provides:
-    nrpe-external-master:
-        interface: nrpe-external-master
-        scope: container

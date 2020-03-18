@@ -1,5 +1,0 @@
-ArchiveRoot: /srv/data/mirror/
-MediaBaseUrl: https://#HOSTNAME#/media/
-HtmlBaseUrl: https://#HOSTNAME#/
-DistroName: Ubuntu
-Suites:
