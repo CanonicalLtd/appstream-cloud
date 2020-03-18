@@ -2,7 +2,7 @@
 
 set -e
 
-MOUNTPOINT="/srv/appstream"
+MOUNTPOINT="/home/ubuntu/appstream/"
 
 if [ ! -d "${MOUNTPOINT}" ]; then
         mkdir -p "${MOUNTPOINT}"

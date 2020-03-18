@@ -2,19 +2,17 @@
 
 set -e
 
-if ! grep -qs /srv/appstream /proc/mounts; then
-        juju-log "/srv/appstream is not mounted; skipping initial setup"
+if ! grep -qs /home/ubuntu/appstream /proc/mounts; then
+        juju-log "/home/ubuntu/appstream is not mounted; skipping initial setup"
         exit 0
 fi
-
-usermod -d /srv/appstream ubuntu
 
 juju-log 'Installing config files'
 
 mkdir -p /etc/rsync-juju.d/
 cat <<EOF > /etc/rsync-juju.d/appstream.conf
 [appstream]
-    path = /srv/appstream/appstream-public/data
+    path = /home/ubuntu/appstream/appstream-public/data
     read only = yes
     list = yes
     uid = appstream
@@ -23,7 +21,7 @@ EOF
 
 cat <<EOF > /etc/rsync-juju.d/www.conf
 [www]
-    path = /srv/appstream/appstream-public
+    path = /home/ubuntu/appstream/appstream-public
     read only = yes
     list = yes
     uid = ubuntu
@@ -32,7 +30,7 @@ EOF
 
 cat <<EOF > /etc/rsync-juju.d/logs.conf
 [logs]
-    path = /srv/appstream/logs
+    path = /home/ubuntu/appstream/logs
     read only = yes
     list = yes
     uid = ubuntu
@@ -42,10 +40,10 @@ EOF
 service rsync restart
 open-port 873
 
-chown ubuntu:ubuntu /srv/appstream
+chown ubuntu:ubuntu /home/ubuntu/appstream
 
 cat <<EOF | su - ubuntu
-cd /srv/appstream
+cd /home/ubuntu/appstream
 
 mkdir -p appstream-public appstream-workdir/export logs
 if [ ! -e appstream-workdir/export/logs ]; then

@@ -3,10 +3,10 @@
 set -e
 
 INPUT_FILENAME=${CHARM_DIR}/asgen-config.json.in
-OUTPUT_FILENAME=/srv/appstream/appstream-workdir/asgen-config.json
+OUTPUT_FILENAME=/home/ubuntu/appstream/appstream-workdir/asgen-config.json
 
-if ! grep -qs /srv/appstream /proc/mounts; then
-        juju-log 'Deferring config-changed; /srv/appstream is not mounted'
+if ! grep -qs /home/ubuntu/appstream /proc/mounts; then
+        juju-log 'Deferring config-changed; /home/ubuntu/appstream is not mounted'
         exit 0
 fi
 
@@ -40,8 +40,8 @@ set -e
 
 rm -f ~/update-appstream.sh
 cp -a ${CHARM_DIR}/update-appstream.sh ~/update-appstream.sh
-sed -e 's/#SUITES#/${SUITES}/' ${CHARM_DIR}/check-public-mtimes.in > /srv/appstream/check-public-mtimes
-chmod +x /srv/appstream/check-public-mtimes
+sed -e 's/#SUITES#/${SUITES}/' ${CHARM_DIR}/check-public-mtimes.in > /home/ubuntu/appstream/check-public-mtimes
+chmod +x /home/ubuntu/appstream/check-public-mtimes
 
 chmod a+x ~/update-appstream.sh
 

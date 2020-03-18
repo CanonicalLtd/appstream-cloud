@@ -2,7 +2,7 @@
 
 set -e
 
-BASE_DIR=/srv/appstream
+BASE_DIR=/home/ubuntu/appstream
 
 ASGEN=/snap/bin/appstream-generator
 PUBLIC_DIR=${BASE_DIR}/appstream-public

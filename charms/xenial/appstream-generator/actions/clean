@@ -2,7 +2,7 @@
 
 set -e
 
-BASE_DIR=/srv/appstream
+BASE_DIR=/home/ubuntu/appstream
 
 touch "${BASE_DIR}/clean"
 chown ubuntu:ubuntu "${BASE_DIR}/clean"

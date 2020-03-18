@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BASE_DIR=/srv/appstream
+BASE_DIR=/home/ubuntu/appstream
 FORGET_FILE=${BASE_DIR}/forget
 
 if [ -e "${FORGET_FILE}" ]; then

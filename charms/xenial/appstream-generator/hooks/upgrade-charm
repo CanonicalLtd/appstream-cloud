@@ -16,9 +16,9 @@ fi
 
 UBUNTU_HOMEDIR="$(getent passwd ubuntu | cut -d: -f6)"
 
-if [ "${UBUNTU_HOMEDIR}" != "/srv/appstream" ]; then
-        usermod -d /srv/appstream ubuntu
-        mv /home/ubuntu/update-appstream.sh /srv/appstream/
+if [ "${UBUNTU_HOMEDIR}" = "/srv/appstream" ]; then
+        usermod -d /srv/appstream /home/ubuntu
+        mv /srv/ubuntu/update-appstream.sh /home/ubuntu
 fi
 
 if id appstream 2>/dev/null; then

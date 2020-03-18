@@ -9,5 +9,9 @@ if [ -z "$mount" ] ; then
         exit 0
 fi
 
+if [ ! -d "${mount}" ]; then
+        mkdir -p "${mount}"
+fi
+
 ${CHARM_DIR}/initial-setup
 ${CHARM_DIR}/hooks/config-changed
