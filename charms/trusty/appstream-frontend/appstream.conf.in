@@ -7,14 +7,14 @@
     Options -Indexes
 </Directory>
 
-<Directory /srv/appstream/logs>
+<Directory /srv/logs>
     Options Indexes
     Require all granted
 </Directory>
 
 Alias /data /srv/appstream/data
 Alias /media /srv/appstream/media
-Alias /logs /srv/appstream/logs
+Alias /logs /srv/logs
 Alias /hints /srv/appstream/hints
 <VirtualHost *:80>
     ServerName @EXTERNAL_HOSTNAME@
