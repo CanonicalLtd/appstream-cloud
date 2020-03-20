@@ -43,7 +43,7 @@ for release in ${RELEASES}; do
     if [ -e "${CLEAN_FILE}" ]; then
         ${ASGEN} -w ${WORKSPACE_DIR} remove-found ${release}
     fi
-    ${ASGEN} -w ${WORKSPACE_DIR} process ${release}
+    ${ASGEN} -w ${WORKSPACE_DIR} --force process ${release}
 done
 
 echo "Updating ${PUBLIC_DIR}"
