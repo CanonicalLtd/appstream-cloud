@@ -15,8 +15,8 @@ cat <<EOF > /etc/rsync-juju.d/appstream.conf
     path = /home/ubuntu/appstream/appstream-public/data
     read only = yes
     list = yes
-    uid = appstream
-    gid = appstream
+    uid = ubuntu
+    gid = ubuntu
 EOF
 
 cat <<EOF > /etc/rsync-juju.d/www.conf
