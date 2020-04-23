@@ -3,5 +3,16 @@
                 "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "s390x"],
                 "suites": ["", "-proposed", "-updates", "-security", "-backports"]
         },
+        "xenial" : {
+                "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "powerpc", "s390x"],
+                "suites": ["-proposed", "-updates", "-security", "-backports"],
+                "oldSuite": true
+        },
+        "bionic" : {
+                "released" : true
+        },
+        "eoan" : {
+                "released" : true
+        },
         "focal" : {}
 }
