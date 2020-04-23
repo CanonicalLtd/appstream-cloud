@@ -14,5 +14,7 @@
         "eoan" : {
                 "released" : true
         },
-        "focal" : {}
+        "focal" : {
+                "released" : true
+        }
 }
