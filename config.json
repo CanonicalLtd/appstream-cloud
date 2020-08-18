@@ -11,9 +11,6 @@
         "bionic" : {
                 "released" : true
         },
-        "eoan" : {
-                "released" : true
-        },
         "focal" : {
                 "released" : true
         },
