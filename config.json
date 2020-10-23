@@ -15,6 +15,10 @@
                 "released" : true
         },
         "groovy" : {
+                "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "riscv64", "s390x"],
+                "released" : true
+        },
+        "hirsute" : {
                 "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "riscv64", "s390x"]
         }
 }
