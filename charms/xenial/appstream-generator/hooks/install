@@ -30,6 +30,6 @@ apt-get -y install jq
 # for storage and ksplice (py2)
 apt-get -y install python-yaml python-six
 
-snap install --devmode --edge appstream-generator
+snap install --candidate appstream-generator
 
 ${CHARM_DIR}/initial-setup
