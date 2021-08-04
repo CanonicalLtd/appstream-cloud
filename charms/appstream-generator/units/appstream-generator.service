@@ -1,0 +1,9 @@
+[Unit]
+Description=Run the AppStream generator
+
+[Service]
+EnvironmentFile=-/etc/environment.d/proxy.conf
+ExecStart=/home/ubuntu/update-appstream.sh
+Group=ubuntu
+User=ubuntu
+Type=oneshot

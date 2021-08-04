@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync appstream from backend (timer)
+
+[Timer]
+OnCalendar=minutely
+
+[Install]
+WantedBy=timers.target

@@ -1,5 +1,6 @@
 # charmcraft build dirs
 charms/*/build
+charms/*/*.charm
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

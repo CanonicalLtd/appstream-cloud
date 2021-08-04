@@ -1,0 +1,3 @@
+collect
+script config=scripts/upgrade-charm CHARM=appstream-generator
+juju-check-wait

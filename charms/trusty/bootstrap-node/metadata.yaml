@@ -1,7 +1,0 @@
-name: bootstrap-node
-summary: run exec.d/ hooks and attach point of subordinate charms
-maintainer: Martin Pitt <martin.pitt@ubuntu.com>
-description: |
-  This charm does nothing by itself exept for running
-  exec.d/*/charm-pre-install (for deploying basenode) and providing a hook for
-  relating subordinate charms. This is mostly useful for the Juju bootstrap node.

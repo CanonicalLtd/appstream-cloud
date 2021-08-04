@@ -1,0 +1,12 @@
+options:
+    hostname:
+        description: The hostname the service will be presented on
+        type: string
+    config:
+        description: The configuration of the asgen (releases, etc - see config.json)
+        type: string
+    mirror:
+        default: http://archive.ubuntu.com/ubuntu/
+    http_proxy:
+    https_proxy:
+    no_proxy:
