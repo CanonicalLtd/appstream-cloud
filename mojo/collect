@@ -1,2 +1,2 @@
-appstream-generator git+https://git.launchpad.net/~ubuntu-desktop/+git/appstream-cloud/;branch=wip/built-appstream-generator,overwrite=True
-appstream-frontend git+https://git.launchpad.net/~ubuntu-desktop/+git/appstream-cloud/;branch=wip/built-appstream-frontend,overwrite=True
+appstream-generator git+https://git.launchpad.net/~ubuntu-desktop/+git/appstream-cloud/;branch=built-appstream-generator,overwrite=True
+appstream-frontend git+https://git.launchpad.net/~ubuntu-desktop/+git/appstream-cloud/;branch=built-appstream-frontend,overwrite=True
