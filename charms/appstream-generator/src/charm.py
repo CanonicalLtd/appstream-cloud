@@ -29,6 +29,10 @@ from ops.model import ActiveStatus, BlockedStatus, MaintenanceStatus
 
 logger = logging.getLogger(__name__)
 
+# This is a special value that means we use the default channel, which comes
+# from the charm config.
+DEFAULT_SNAP_CHANNEL = None
+
 APPSTREAM_BASE = Path("~ubuntu/appstream").expanduser()
 APPSTREAM_PUBLIC = APPSTREAM_BASE / "appstream-public"
 APPSTREAM_WORKDIR = APPSTREAM_BASE / "appstream-workdir"
@@ -36,7 +40,7 @@ ENVIRONMENT_FILE = Path("/etc/environment.d/proxy.conf")
 INPUT_FILENAME = "asgen-config.json.in"
 OUTPUT_FILENAME = APPSTREAM_WORKDIR / "asgen-config.json"
 PACKAGES_TO_INSTALL = ["jq"]
-SNAPS_TO_INSTALL = {"appstream-generator": "stable"}
+SNAPS_TO_INSTALL = {"appstream-generator": DEFAULT_SNAP_CHANNEL}
 SYSTEMD_ENABLE_UNITS = ("appstream-generator.timer",)
 SYSTEMD_UNITS = ("appstream-generator.service", "appstream-generator.timer")
 
@@ -171,25 +175,44 @@ class AppstreamGeneratorCharm(CharmBase):
         )
         self._stored.installed_packages |= packages
 
-    def _install_snaps(self, snaps):
-        snaps = {
-            snap: snaps[snap]
-            for snap in snaps
-            if snap not in self._stored.installed_snaps
-        }
-        if not snaps:
+    def _install_snaps(self, wanted_snaps):
+        default_snap_channel = self.model.config.get(
+            "default_snap_channel", "stable"
+        )
+        snaps_to_install = {}
+        for snap in wanted_snaps:
+            wanted_channel = wanted_snaps[snap] or default_snap_channel
+            if snap not in self._stored.installed_snaps:
+                verb = "install"
+            else:
+                if self._stored.installed_snaps[snap] == wanted_channel:
+                    continue
+                verb = "refresh"
+            snaps_to_install[snap] = wanted_channel, verb
+
+        if not snaps_to_install:
             logger.info("No snaps to install.")
             return
-        snps = ", ".join(snaps.keys())
-        self.unit.status = MaintenanceStatus(f"Installing {snps}")
-        logger.info(f"Installing snap package(s) {snps}")
-        for snap in snaps:
-            channel = snaps[snap]
-            verb = (
-                "install"
-                if snap not in self._stored.installed_snaps
-                else "refresh"
-            )
+        snps_install = ", ".join(
+            [s for s in snaps_to_install if snaps_to_install[s][1] == "install"]
+        )
+        status_list = []
+        if snps_install:
+            status_list.append(f"Installing snap packages: {snps_install}")
+        snps_refresh = ", ".join(
+            [
+                f"{s}/{snaps_to_install[s][0]}"
+                for s in snaps_to_install
+                if snaps_to_install[s][1] == "refresh"
+            ]
+        )
+        if snps_refresh:
+            status_list.append(f"Refreshing snap packages: {snps_refresh}")
+        status_string = "; ".join(status_list)
+
+        self.unit.status = MaintenanceStatus(status_string)
+        logger.info(status_string)
+        for snap, (channel, verb) in snaps_to_install:
             subprocess.check_call(
                 [
                     "snap",

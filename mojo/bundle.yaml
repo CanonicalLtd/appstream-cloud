@@ -27,6 +27,9 @@ applications:
     num_units: 1
 {%- if stage_name == "production" or stage_name == "staging" %}
     options:
+{%- if stage_name == "staging" %}
+      default_snap_channel: candidate
+{%- endif %}
       hostname: https://{{ hostname }}
       mirror: http://ftpmaster.internal/ubuntu/
     storage:

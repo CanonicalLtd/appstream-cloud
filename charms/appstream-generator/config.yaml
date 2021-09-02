@@ -7,6 +7,10 @@ options:
         type: string
     mirror:
         default: http://archive.ubuntu.com/ubuntu/
+    default_snap_channel:
+        description: When installing snaps, default to this channel
+        type: string
+        default: stable
     http_proxy:
     https_proxy:
     no_proxy:
