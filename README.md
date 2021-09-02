@@ -41,11 +41,15 @@ as a string and deserialised on the other side.
 You need to have access to the live environment, which means you need to be a
 Canonical employee.
 
-Build the charm using `charmcraft build` (`charmcraft` comes from a snap: `snap
-install charmcraft`). Copy the output of the `build` directory to the
-`built-CHARMNAME` (`appstream-generator` or `appstream-frontend`) branch, and
-push it. Then execute `mojo run -m manifest-upgrade` in the live environment to
-re-run the Mojo spec.
+  * Build the charm using `charmcraft build` (`charmcraft` comes from a snap:
+    `snap install charmcraft`).
+  * Change to the `built-CHARMNAME` (`built-appstream-generator` or
+    `built-appstream-frontend`) branch
+    * use a `git worktree` for this
+  * Remove all non-hidden files: `rm -r *`
+  * Unzip the output of the build step here; `unzip ../path/to/the/branch/charms/*/CHARMNAME/CHARMNAME.build`
+  * Commit the changes: `git add .; git commit -m "New build"`
+  * On the controller machine, execute `mojo run -m manifest-upgrade`
 
 # License
 
