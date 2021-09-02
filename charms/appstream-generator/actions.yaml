@@ -1,0 +1,18 @@
+clean:
+  description: Clean up so that the next run forces a full refresh
+run-now:
+  description: Run an update immediately
+forget:
+  description: Forget packages from all releases, causing them to be reprocessed the next time
+  params:
+    packages:
+      type: array
+      items: { type: string }
+  required: [packages]
+forget-tag:
+  description: Forget all packages with a given tag, causing them to be reprocessed the next time
+  params:
+    tag:
+      type: string
+      description: The tag to forget
+  required: [tag]

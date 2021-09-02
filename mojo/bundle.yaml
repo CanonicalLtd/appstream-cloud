@@ -1,0 +1,105 @@
+{%- if stage_name == "production" %}
+  {%- set hostname = "appstream.ubuntu.com" %}
+  {%- set apache_num_units = 2 %}
+{%- elif stage_name == "staging" %}
+  {%- set hostname = "appstream.staging.ubuntu.com" %}
+  {%- set apache_num_units = 2 %}
+{%- else %}
+  {%- set apache_num_units = 1 %}
+{%- endif %}
+
+series: {{ series }}
+applications:
+  apache2:
+    charm: cs:apache2
+    num_units: {{ apache_num_units }}
+    options:
+      disable_modules: status
+      mpm_type: prefork
+    constraints: root-disk=50G root-disk-source=volume
+  appstream-frontend:
+    charm: ./{{ series }}/appstream-frontend
+    options:
+      external-hostname: {{ hostname }}
+  appstream-generator:
+    charm: ./{{ series }}/appstream-generator
+    expose: true
+    num_units: 1
+{%- if stage_name == "production" or stage_name == "staging" %}
+    options:
+{%- if stage_name == "staging" %}
+      default_snap_channel: candidate
+{%- endif %}
+      hostname: https://{{ hostname }}
+      mirror: http://ftpmaster.internal/ubuntu/
+    storage:
+      appstream: 200G
+    constraints: cpu-cores=8 mem=16G root-disk-source=volume
+  telegraf:
+    charm: telegraf
+    expose: true
+  landscape-client:
+    charm: landscape-client
+    options:
+      account-name: standalone
+      ping-url: http://landscape.is.canonical.com/ping
+      tags: juju-managed
+      url: https://landscape.is.canonical.com/message-system
+      registration-key: include-file://{{local_dir}}/canonical-is-landscape.key
+  ua:
+    charm: cs:~ubuntu-advantage-charmers/ubuntu-advantage
+    options:
+      token: include-file://{{local_dir}}/canonical-is-ua.key
+  haproxy:
+    charm: cs:haproxy
+    num_units: 1
+    expose: true
+    options:
+        services: |
+            - service_name: https_service
+              service_host: "::"
+              service_port: 443
+              crts: [DEFAULT]
+              service_options:
+                  - balance leastconn
+                  - cookie SRVNAME insert
+                  - option httpchk HEAD / HTTP/1.0
+                  - http-request set-header X-Forwarded-Proto https
+                  - "redirect prefix https://{{ hostname }} code 301 unless { hdr(host) -i {{ hostname }} }"
+              server_options: check inter 10000 rise 2 fall 5 maxconn 512 cookie S{i}
+            - service_name: http_redirect_to_https
+              service_host: "::"
+              service_port: 80
+              service_options:
+                  - "redirect prefix https://{{ hostname }} code 301 unless { hdr(host) -i {{ hostname }} }"
+                  - "redirect scheme https code 301 if ! { ssl_fc }"
+        ssl_cert: DEFAULT
+        ssl_key:
+  autocert-haproxy:
+    charm: cs:~autocert-charmers/autocert
+    options:
+        autocert_host: autocert.canonical.com
+        cert_additional_names: {{ hostname }}=default
+        cert_auth_pairs: include-file://{{local_dir}}/cert_auth_pairs
+        dir_certs: /var/lib/haproxy
+        dir_keys: /var/lib/haproxy
+        service_action: reload
+        service_name: haproxy
+        suffix_cert: ".pem"
+        suffix_chain: ".pem"
+        suffix_key: ".pem"
+relations:
+  - ["ua", "appstream-generator"]
+  - ["ua", "apache2"]
+  - ["ua", "haproxy"]
+  - ["appstream-generator:juju-info", "telegraf"]
+  - ["apache2:juju-info", "telegraf"]
+  - ["haproxy:juju-info", "telegraf"]
+  - ["landscape-client", "apache2"]
+  - ["landscape-client", "appstream-generator"]
+  - ["landscape-client", "haproxy"]
+  - ["haproxy", "autocert-haproxy"]
+  - ["haproxy:reverseproxy", "apache2:website"]
+{%- endif %}
+  - ["apache2", "appstream-frontend"]
+  - ["appstream-generator", "appstream-frontend"]

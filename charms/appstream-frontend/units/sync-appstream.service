@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync appstream data from backend
+
+[Service]
+EnvironmentFile=-/home/ubuntu/rsync-address
+ExecStart=/home/ubuntu/update.sh
+User=ubuntu
+Group=ubuntu

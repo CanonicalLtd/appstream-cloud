@@ -1,0 +1,7 @@
+# Copyright 2021 Canonical
+
+options:
+    external-hostname:
+        description: The hostname the service will be presented on
+        default: appstream.ubuntu.com
+        type: string

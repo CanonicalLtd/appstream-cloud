@@ -1,9 +1,0 @@
-#!/bin/sh
-
-EXTERNAL_HOSTNAME=$(config-get external-hostname)
-
-relation-set domain=${EXTERNAL_HOSTNAME}
-relation-set site_config="$(sed -e "s/@EXTERNAL_HOSTNAME@/${EXTERNAL_HOSTNAME}/" ${CHARM_DIR}/appstream.conf.in)"
-relation-set site_modules="autoindex"
-relation-set ports=80
-relation-set enabled=true
