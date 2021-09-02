@@ -147,7 +147,7 @@ class AppstreamGeneratorCharm(CharmBase):
         self._stored.storage_attached = False
 
     def _on_start(self, event):
-        if not self._ensure_set_up(event):
+        if not self._ensure_set_up(event, more_to_do=True):
             return
 
         for unit in SYSTEMD_ENABLE_UNITS:
@@ -411,7 +411,7 @@ class AppstreamGeneratorCharm(CharmBase):
             subprocess.check_call(["systemctl", "restart", "rsync"])
             open_port(873)
 
-    def _ensure_set_up(self, event):
+    def _ensure_set_up(self, event, more_to_do=False):
         if not self._stored.storage_attached:
             event.defer()
             self.unit.status = BlockedStatus(
@@ -434,10 +434,14 @@ class AppstreamGeneratorCharm(CharmBase):
             )
             return False
 
+        if not more_to_do:
+            self.unit.status = ActiveStatus()
         return True
 
     def _on_install(self, event):
-        self._ensure_set_up(event)
+        # We're not started yet, so don't set active. We'll do that after the
+        # `start` hook.
+        self._ensure_set_up(event, more_to_do=True)
 
     def _on_config_changed(self, event):
         if "appstream-generator" not in self._stored.installed_snaps:
