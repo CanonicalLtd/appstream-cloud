@@ -194,7 +194,11 @@ class AppstreamGeneratorCharm(CharmBase):
             logger.info("No snaps to install.")
             return
         snps_install = ", ".join(
-            [s for s in snaps_to_install if snaps_to_install[s][1] == "install"]
+            [
+                s
+                for s in snaps_to_install
+                if snaps_to_install[s][1] == "install"
+            ]
         )
         status_list = []
         if snps_install:
