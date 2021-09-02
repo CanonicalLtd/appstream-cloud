@@ -45,9 +45,11 @@ Canonical employee.
     `snap install charmcraft`).
   * Change to the `built-CHARMNAME` (`built-appstream-generator` or
     `built-appstream-frontend`) branch
-    * use a `git worktree` for this
+    * use a `git worktree` for this so you can have both branches on your
+      filesystem at once
   * Remove all non-hidden files: `rm -r *`
-  * Unzip the output of the build step here; `unzip ../path/to/the/branch/charms/*/CHARMNAME/CHARMNAME.build`
+  * Unzip the output of the build step here; `unzip
+    ../path/to/the/branch/charms/*/CHARMNAME/CHARMNAME.build`
   * Commit the changes: `git add .; git commit -m "New build"`
   * On the controller machine, execute `mojo run -m manifest-upgrade`
 
