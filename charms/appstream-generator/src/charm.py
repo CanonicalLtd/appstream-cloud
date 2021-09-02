@@ -212,7 +212,7 @@ class AppstreamGeneratorCharm(CharmBase):
 
         self.unit.status = MaintenanceStatus(status_string)
         logger.info(status_string)
-        for snap, (channel, verb) in snaps_to_install:
+        for snap, (channel, verb) in snaps_to_install.items():
             subprocess.check_call(
                 [
                     "snap",
