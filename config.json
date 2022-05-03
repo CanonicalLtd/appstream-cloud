@@ -19,6 +19,10 @@
                 "released" : true
         },
         "jammy" : {
-                "architectures": ["amd64", "armhf", "arm64", "i386", "ppc64el", "riscv64", "s390x"]
+                "architectures": ["amd64", "armhf", "arm64", "ppc64el", "riscv64", "s390x"],
+                "released" : true
+        },
+        "kinetic" : {
+                "architectures": ["amd64", "armhf", "arm64", "ppc64el", "riscv64", "s390x"]
         }
 }
