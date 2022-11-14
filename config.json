@@ -19,6 +19,10 @@
                 "released" : true
         },
         "kinetic" : {
+                "architectures": ["amd64", "armhf", "arm64", "ppc64el", "riscv64", "s390x"],
+                "released" : true
+        },
+        "lunar" : {
                 "architectures": ["amd64", "armhf", "arm64", "ppc64el", "riscv64", "s390x"]
         },
         "lunar" : {
